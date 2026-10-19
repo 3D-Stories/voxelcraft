@@ -8,6 +8,10 @@ A browser-based voxel sandbox game faithful to **Minecraft Java Edition 1.21.x**
 
 The survival loop now works: breaking blocks **drops items into a 36-slot inventory** with stack counts, a 9-slot hotbar, **wooden and stone tools** with correct-tool mining speeds and durability, and **crafting** — planks/sticks/table from the inventory (E) and tools at a placed crafting table. Placeable water and a creative **god mode** (G) round it out.
 
+## Roadmap
+
+[`ROADMAP.md`](ROADMAP.md) tracks the full path to Minecraft parity — every block, mob, system and screen, with what is done, partial or missing.
+
 ## Specification
 
 | File | Contents |
@@ -39,8 +43,8 @@ npm run generate-textures # regenerate public/assets/textures/blocks/*.png
 | Sprint | Left Ctrl, or double-tap W |
 | Look | Click the canvas to capture the mouse; Esc releases it |
 | Select hotbar slot | 1-9, or the mouse wheel |
-| Inventory | E — 36 slots and basic crafting recipes; click a hotbar slot to select it |
-| Crafting table | Right-click a placed crafting table to open the tool recipes |
+| Inventory | E — 36 slots + 2×2 crafting grid (click/right-click/shift-click to move items) |
+| Crafting table | Right-click a placed crafting table to open the 3×3 grid |
 | Break block | Left mouse (hold; speed depends on the held tool and block hardness) |
 | Place block | Right mouse (consumes the selected block; free in god mode) |
 | God mode | G — instant mining, 5-block reach, invulnerable; double-tap Space to fly (Space up, Shift down) |
@@ -48,11 +52,11 @@ npm run generate-textures # regenerate public/assets/textures/blocks/*.png
 
 ### Progression
 
-1. Punch oak leaves/logs, then press **E** and craft **oak planks** (1 log → 4) and **sticks** (2 planks → 4).
-2. Craft a **crafting table** (4 planks), place it, and right-click it.
+1. Punch oak leaves/logs, then press **E** and use the **2×2 crafting grid**: one log → 4 **oak planks**, two planks stacked vertically → 4 **sticks**.
+2. Fill the 2×2 with planks to craft a **crafting table**; place it and right-click it for the **3×3 grid**.
 3. Craft a **wooden pickaxe** (3 planks + 2 sticks), then mine stone (it drops nothing by hand) for **stone tools**.
 
-Crafting currently uses recipe lists rather than the 3×3 grid. Stone drops stone (cobblestone is not in the block set yet), and iron/diamond tiers wait for ore generation.
+Click a stack to pick it up, click again to place, right-click to split/place one, shift-click to move stacks. Stone drops stone (cobblestone is not in the block set yet), and iron/diamond tiers wait for ore generation.
 
 ### Worlds and saves
 

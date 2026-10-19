@@ -136,6 +136,46 @@
   color: #bbb;
 }
 
+.craft-area {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 12px;
+}
+
+.craft-area[hidden] { display: none; }
+
+.craft-grid {
+  display: grid;
+  gap: 4px;
+  grid-auto-rows: 40px;
+}
+
+.craft-slot, .craft-result {
+  position: relative;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(139, 139, 139, 0.25);
+  border: 2px solid #555;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.craft-result.filled { border-color: #8bc34a; }
+.craft-slot img, .craft-result img { width: 28px; height: 28px; image-rendering: pixelated; pointer-events: none; }
+.craft-arrow { color: #888; font-size: 18px; pointer-events: none; }
+
+.cursor-stack {
+  position: fixed;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.cursor-stack img { width: 30px; height: 30px; image-rendering: pixelated; }
+.cursor-stack[hidden] { display: none; }
+
+.creative-grid[hidden] { display: none; }
+
 .inventory-grid {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
