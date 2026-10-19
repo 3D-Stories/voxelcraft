@@ -22,6 +22,7 @@ npm run dev               # http://localhost:3000
 npm run build             # → dist/
 npm run preview           # http://localhost:4173
 npm run generate-textures # regenerate public/assets/textures/blocks/*.png
+                          # (needs the native module: npm i --no-save canvas)
 ```
 
 ### Controls
