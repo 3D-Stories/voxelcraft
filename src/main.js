@@ -159,6 +159,7 @@ async function main() {
     BlockRegistry.SAND,
     BlockRegistry.OAK_LOG,
     BlockRegistry.OAK_LEAVES,
+    BlockRegistry.WATER,
   ]);
   interaction.selectedBlock = hotbar.selectedBlock;
   hotbar.subscribe((bar) => {
@@ -166,6 +167,7 @@ async function main() {
   });
 
   const hud = new HUD(hotbar, appEl);
+  controller.onGodModeChange = (on) => hud.setGodMode(on);
   const inventory = new InventoryScreen(hotbar, appEl, {
     onToggle: (open) => {
       controller.enabled = !open;

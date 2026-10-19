@@ -1,5 +1,19 @@
 /* Gameplay HUD: crosshair, hint line, hotbar and the simple inventory. */
 
+#godmode-badge {
+  position: fixed; top: 14px; right: 14px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid #ffd54f;
+  border-radius: 4px;
+  color: #ffd54f;
+  font: bold 12px 'Courier New', monospace;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+
+#godmode-badge[hidden] { display: none; }
+
 #crosshair {
   position: fixed; left: 50%; top: 50%;
   width: 18px; height: 18px;
@@ -93,7 +107,7 @@
 
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap: 8px;
   margin-bottom: 14px;
 }

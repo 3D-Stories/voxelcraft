@@ -3,10 +3,14 @@
 // Returns the first solid block along the ray and the face normal that was
 // entered, so placement can use block + normal.
 
+import { BlockRegistry } from '../core/BlockRegistry.js';
+
 // Block reach outside Creative mode: https://minecraft.wiki/w/Player#Interaction_range
 export const BLOCK_REACH = 4.5;
+export const CREATIVE_REACH = 5.0;
 
-export function raycastVoxel(world, origin, direction, maxDistance = BLOCK_REACH) {
+export function raycastVoxel(world, origin, direction, maxDistance = BLOCK_REACH, options = {}) {
+  const includeLiquids = options.includeLiquids ?? false;
   const dx = direction.x;
   const dy = direction.y;
   const dz = direction.z;
@@ -18,7 +22,7 @@ export function raycastVoxel(world, origin, direction, maxDistance = BLOCK_REACH
   let z = Math.floor(origin.z);
 
   // Starting inside a solid block would give no meaningful face normal.
-  if (world.isSolidAt(x, y, z)) return null;
+  if (BlockRegistry.isSolid(world.getBlock(x, y, z).id)) return null;
 
   const stepX = Math.sign(dx);
   const stepY = Math.sign(dy);
@@ -54,9 +58,12 @@ export function raycastVoxel(world, origin, direction, maxDistance = BLOCK_REACH
     }
 
     if (distance > maxDistance) break;
-    if (!world.isSolidAt(x, y, z)) continue;
 
     const block = world.getBlock(x, y, z);
+    const hittable = BlockRegistry.isSolid(block.id)
+      || (includeLiquids && BlockRegistry.isLiquid(block.id));
+    if (!hittable) continue;
+
     return { x, y, z, id: block.id, normal, distance };
   }
 

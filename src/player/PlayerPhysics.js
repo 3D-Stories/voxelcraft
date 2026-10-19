@@ -7,6 +7,8 @@
 // the floor. Velocity is applied before gravity on each tick: that is the
 // vanilla ordering and it reproduces the documented 1.2522-block jump height.
 
+import { BlockRegistry } from '../core/BlockRegistry.js';
+
 const GRAVITY = -32; // blocks/s^2 (docs/10-architecture.md section 6)
 const TERMINAL_VELOCITY = -78; // blocks/s (same section)
 const DRAG = 0.98; // per-tick vertical drag, vanilla
@@ -30,10 +32,18 @@ export class PlayerPhysics {
 
     // Collision with the floor during this tick re-sets this.
     player.onGround = false;
+    player.inWater = this._isInWater();
 
     this._moveAxis('y', player.velocity.y * dt);
     this._moveAxis('x', player.velocity.x * dt);
     this._moveAxis('z', player.velocity.z * dt);
+
+    if (player.flying) return; // creative flight: no gravity
+    if (player.inWater) {
+      // Buoyancy is controller-driven; just damp residual vertical motion.
+      player.velocity.y *= Math.pow(0.8, dt / TICK_SECONDS);
+      return;
+    }
 
     // Gravity is applied after movement, matching vanilla's tick order.
     player.velocity.y += this.gravity * dt;
@@ -41,6 +51,21 @@ export class PlayerPhysics {
     if (player.velocity.y < this.terminalVelocity) {
       player.velocity.y = this.terminalVelocity;
     }
+  }
+
+  _isInWater() {
+    if (typeof this.world.getBlock !== 'function') return false;
+    const player = this.player;
+    const samples = [0.1, player.height * 0.5, player.eyeHeight];
+    for (const dy of samples) {
+      const block = this.world.getBlock(
+        player.position.x,
+        player.position.y + dy,
+        player.position.z,
+      );
+      if (block && BlockRegistry.isLiquid(block.id)) return true;
+    }
+    return false;
   }
 
   // Returns true when the axis movement was stopped by a block.

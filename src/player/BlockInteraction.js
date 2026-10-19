@@ -5,7 +5,7 @@
 // the air, rounded up to whole ticks (https://minecraft.wiki/w/Breaking#Mining_efficiency).
 
 import { BlockRegistry } from '../core/BlockRegistry.js';
-import { raycastVoxel, BLOCK_REACH } from './Raycast.js';
+import { raycastVoxel, BLOCK_REACH, CREATIVE_REACH } from './Raycast.js';
 
 const TICK_SECONDS = 0.05;
 
@@ -44,12 +44,27 @@ export class BlockInteraction {
       y: player.position.y + player.eyeHeight,
       z: player.position.z,
     };
-    return raycastVoxel(this.world, origin, direction, BLOCK_REACH);
+    const reach = player.godMode ? CREATIVE_REACH : BLOCK_REACH;
+    // Creative mode can target liquids (so placed water can be removed).
+    return raycastVoxel(this.world, origin, direction, reach, {
+      includeLiquids: player.godMode,
+    });
   }
 
   update(dt) {
     const target = this.getTarget();
     if (this.highlight) this.highlight.update(target);
+
+    // Creative/god mode breaks the targeted block instantly.
+    if (this.player.godMode) {
+      if (this._mining && target) {
+        if (this.world.setBlock(target.x, target.y, target.z, BlockRegistry.AIR)) {
+          if (this.onBreak) this.onBreak(target);
+        }
+        this._targetKey = null;
+      }
+      return;
+    }
 
     if (!this._mining || !target) {
       this._ticksMined = 0;
@@ -122,7 +137,10 @@ export class BlockInteraction {
     const z = target.z + target.normal.z;
 
     if (this.world.getBlock(x, y, z).id !== BlockRegistry.AIR) return false;
-    if (this._blockIntersectsPlayer(x, y, z)) return false;
+    // Liquids may be placed at the player's own feet; solids may not.
+    if (BlockRegistry.isSolid(this.selectedBlock) && this._blockIntersectsPlayer(x, y, z)) {
+      return false;
+    }
     return this.world.setBlock(x, y, z, this.selectedBlock);
   }
 

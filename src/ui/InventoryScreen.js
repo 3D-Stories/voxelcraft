@@ -13,6 +13,7 @@ const PALETTE = [
   BlockRegistry.SAND,
   BlockRegistry.OAK_LOG,
   BlockRegistry.OAK_LEAVES,
+  BlockRegistry.WATER,
 ];
 
 function labelFor(blockId) {

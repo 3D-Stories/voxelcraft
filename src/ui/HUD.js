@@ -51,11 +51,16 @@ export class HUD {
     }
   }
 
+  setGodMode(on) {
+    this.badge.hidden = !on;
+  }
+
   destroy() {
     if (this._unsubscribe) this._unsubscribe();
     document.removeEventListener('keydown', this._onKeyDown);
     document.removeEventListener('wheel', this._onWheel);
     this.el.remove();
+    this.badge.remove();
   }
 
   // --- internals -----------------------------------------------------------
@@ -89,6 +94,12 @@ export class HUD {
     }
 
     this.container.appendChild(this.el);
+
+    this.badge = document.createElement('div');
+    this.badge.id = 'godmode-badge';
+    this.badge.textContent = 'GOD MODE · double-tap Space to fly';
+    this.badge.hidden = true;
+    this.container.appendChild(this.badge);
   }
 
   _handleKeyDown(event) {

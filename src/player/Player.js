@@ -22,8 +22,11 @@ export class Player {
     this.pitch = 0;
 
     this.onGround = false;
+    this.inWater = false;
     this.sneaking = false;
     this.sprinting = false;
+    this.godMode = false;
+    this.flying = false;
   }
 
   get halfWidth() {

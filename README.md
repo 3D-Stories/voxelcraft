@@ -4,7 +4,7 @@ A browser-based voxel sandbox game faithful to **Minecraft Java Edition 1.21.x**
 
 **Live:** https://voxelcraft-3d-stories.vercel.app/
 
-**Status: Phase 1 vertical slice.** The client is feature-complete for the first milestone: Vite + Three.js scaffold, procedural 16×16 textures and atlas, the chunk data model (16×16×384, Y −64..320), a greedy mesher with tiled atlas textures, deterministic simplex terrain (plains, forest and desert with oak trees) streamed by circular render distance, a first-person player (WASD, jump, sneak, sprint, mouse look, gravity and AABB collision on a fixed 20 TPS tick), block breaking/placement with hardness-based mining times and a targeted-block outline, a 9-slot hotbar with a simple block palette, a 20-minute day/night cycle with sun, moon, stars and fog, and IndexedDB world saving with autosave.
+**Status: Phase 1 vertical slice.** The client is feature-complete for the first milestone: Vite + Three.js scaffold, procedural 16×16 textures and atlas, the chunk data model (16×16×384, Y −64..320), a greedy mesher with tiled atlas textures, deterministic simplex terrain (plains, forest and desert with oak trees) streamed by circular render distance, a first-person player (WASD, jump, sneak, sprint, mouse look, gravity and AABB collision on a fixed 20 TPS tick), block breaking/placement with hardness-based mining times and a targeted-block outline, a 9-slot hotbar with a simple block palette, placeable water with swimming, a creative god mode (flight + instant mining), a 20-minute day/night cycle with sun, moon, stars and fog, and IndexedDB world saving with autosave.
 
 ## Specification
 
@@ -40,6 +40,8 @@ npm run generate-textures # regenerate public/assets/textures/blocks/*.png
 | Inventory | E (click a block to put it in the selected slot) |
 | Break block | Left mouse (hold; time depends on block hardness) |
 | Place block | Right mouse (places the selected hotbar block) |
+| God mode | G — instant mining, 5-block reach, invulnerable; double-tap Space to fly (Space up, Shift down) |
+| Swim | Space to rise, Shift to dive (water slows you down) |
 
 ### Worlds and saves
 
