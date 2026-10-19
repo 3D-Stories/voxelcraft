@@ -59,8 +59,16 @@ unauthenticated, run `opencode mcp auth vercel` once (browser consent), then res
 opencode — config and credentials load at startup. Repo linking is covered by the
 `create_git_project` tool (verified in the Vercel MCP tool reference, 2026-10-19).
 `gh` is authenticated as `crandrosoff` (admin of the `3D-Stories` org); the `vercel`
-CLI is installed but deliberately unused and unauthenticated. The GitHub repo is
-private (https://github.com/3D-Stories/voxelcraft) as of 2026-10-19.
+CLI is installed but deliberately unused and unauthenticated.
+
+The GitHub repo is **public** (https://github.com/3D-Stories/voxelcraft) as of
+2026-10-19: Vercel Hobby refuses to deploy from a *private* GitHub organization
+repository, so public was the no-cost alternative to a Pro plan. The Vercel project
+`voxelcraft` (id `prj_phP8RS8oHZBTEd75Fzt8kdLSvhd0`) is linked to `main` and
+auto-deploys every push to production at https://voxelcraft-3d-stories.vercel.app/.
+SSO protection applies to preview deployments only; production is public.
+`canvas` is intentionally not a dependency (native build fails on Vercel Node 24);
+install it with `--no-save` before running the texture generator.
 
 ## Git & release conventions (master prompt §0.5)
 
