@@ -131,7 +131,9 @@ export class BlockInteraction {
     } else if (event.button === 2) {
       if (!this.player.sneaking) {
         const target = this.getTarget();
-        if (target?.id === BlockRegistry.CRAFTING_TABLE && this.onUseBlock) {
+        const usable = target
+          && (target.id === BlockRegistry.CRAFTING_TABLE || target.id === BlockRegistry.FURNACE);
+        if (usable && this.onUseBlock) {
           this.onUseBlock(target);
           return;
         }

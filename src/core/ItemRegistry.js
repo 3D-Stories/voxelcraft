@@ -14,6 +14,9 @@ export const ITEMS = {
   crafting_table: {
     name: 'Crafting Table', kind: 'block', blockId: 9, icon: 'blocks/crafting_table_side.png',
   },
+  furnace: { name: 'Furnace', kind: 'block', blockId: 10, icon: 'blocks/furnace_side.png' },
+  smooth_stone: { name: 'Smooth Stone', kind: 'block', blockId: 11, icon: 'blocks/smooth_stone.png' },
+  charcoal: { name: 'Charcoal', kind: 'item', icon: 'items/charcoal.png' },
   stick: { name: 'Stick', kind: 'item', icon: 'items/stick.png' },
   wooden_pickaxe: {
     name: 'Wooden Pickaxe', kind: 'tool', tool: 'pickaxe', speed: 2, durability: 59, icon: 'items/wooden_pickaxe.png',
@@ -51,6 +54,8 @@ const BLOCK_DROPS = {
   6: 'oak_leaves',
   8: 'oak_planks',
   9: 'crafting_table',
+  10: 'furnace',
+  11: 'smooth_stone',
 };
 
 export function getItem(id) {

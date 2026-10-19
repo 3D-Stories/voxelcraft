@@ -111,6 +111,53 @@
 
 #inventory.open { display: flex; }
 
+#furnace-screen {
+  position: fixed; inset: 0;
+  display: none;
+  align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 10;
+}
+
+#furnace-screen.open { display: flex; }
+
+.furnace-area {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 12px;
+}
+
+.furnace-column {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+
+.furnace-flame {
+  position: relative;
+  width: 14px; height: 20px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #555;
+  display: flex; align-items: flex-end;
+  overflow: hidden;
+}
+
+.furnace-flame-fill {
+  width: 100%; height: 0%;
+  background: linear-gradient(#ffb300, #ff5722);
+  transition: height 0.2s linear;
+}
+
+.furnace-arrow {
+  width: 80px; height: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #555;
+  overflow: hidden;
+}
+
+.furnace-arrow-fill {
+  width: 0%; height: 100%;
+  background: #8bc34a;
+  transition: width 0.2s linear;
+}
+
 .inventory-panel {
   width: 420px;
   padding: 18px 20px 14px;

@@ -16,6 +16,8 @@ const CREATIVE_BLOCKS = [
   BlockRegistry.OAK_LEAVES,
   BlockRegistry.OAK_PLANKS,
   BlockRegistry.CRAFTING_TABLE,
+  BlockRegistry.FURNACE,
+  BlockRegistry.SMOOTH_STONE,
   BlockRegistry.WATER,
 ];
 
@@ -36,6 +38,7 @@ export class InventoryScreen {
     this.container = container;
     this.player = options.player ?? null;
     this.onToggle = options.onToggle ?? null;
+    this.isBlocked = options.isBlocked ?? null;
     this.open = false;
     this.station = 'inventory';
     this.grid = new CraftingGrid(2);
@@ -49,6 +52,7 @@ export class InventoryScreen {
     this._onKeyDown = (event) => {
       if (event.repeat) return;
       if (event.code === 'KeyE') {
+        if (this.isBlocked?.()) return;
         event.preventDefault();
         this.toggle();
       } else if (event.code === 'Escape' && this.open) {

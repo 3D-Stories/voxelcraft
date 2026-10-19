@@ -23,6 +23,12 @@ export const RECIPES = [
     output: { id: 'crafting_table', count: 1 },
   },
   {
+    id: 'furnace',
+    pattern: ['SSS', 'S S', 'SSS'],
+    key: { S: 'stone' },
+    output: { id: 'furnace', count: 1 },
+  },
+  {
     id: 'wooden_pickaxe',
     pattern: ['PPP', ' S ', ' S '],
     key: { P: 'oak_planks', S: 'stick' },

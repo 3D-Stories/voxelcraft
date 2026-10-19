@@ -1,20 +1,20 @@
-const OPAQUE = new Uint8Array([0, 1, 1, 1, 1, 1, 0, 0, 1, 1]);
+const OPAQUE = new Uint8Array([0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1]);
 
 // Water is not a solid block: https://minecraft.wiki/w/Water
-const SOLID = new Uint8Array([0, 1, 1, 1, 1, 1, 1, 0, 1, 1]);
+const SOLID = new Uint8Array([0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1]);
 
-const LIQUID = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1, 0, 0]);
+const LIQUID = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]);
 
 // Hardness: docs/01-research-blocks.md (stone 1.5, grass 0.6, dirt/sand 0.5,
 // oak log 2.0, oak leaves 0.2). Liquids cannot be targeted or broken.
-const HARDNESS = new Float64Array([0, 1.5, 0.6, 0.5, 0.5, 2.0, 0.2, 0, 2.0, 2.5]);
+const HARDNESS = new Float64Array([0, 1.5, 0.6, 0.5, 0.5, 2.0, 0.2, 0, 2.0, 2.5, 3.5, 2.0]);
 
 // Stone needs a pickaxe; the other starting blocks can be harvested by hand.
-const HAND_HARVEST = new Uint8Array([0, 0, 1, 1, 1, 1, 1, 0, 1, 1]);
+const HAND_HARVEST = new Uint8Array([0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0]);
 
 // Correct tool for speed bonuses (null = any/hand); required for drops when
 // the block cannot be hand-harvested (docs/01-research-blocks.md).
-const TOOL = ['', 'pickaxe', 'shovel', 'shovel', 'shovel', 'axe', '', '', 'axe', 'axe'];
+const TOOL = ['', 'pickaxe', 'shovel', 'shovel', 'shovel', 'axe', '', '', 'axe', 'axe', 'pickaxe', 'pickaxe'];
 
 export const FACE_TEXTURES = [
   null,
@@ -27,6 +27,8 @@ export const FACE_TEXTURES = [
   { top: 'water', bottom: 'water', side: 'water' },
   { top: 'oak_planks', bottom: 'oak_planks', side: 'oak_planks' },
   { top: 'crafting_table_top', bottom: 'oak_planks', side: 'crafting_table_side' },
+  { top: 'furnace_top', bottom: 'furnace_top', side: 'furnace_side' },
+  { top: 'smooth_stone', bottom: 'smooth_stone', side: 'smooth_stone' },
 ];
 
 export const BlockRegistry = {
@@ -40,6 +42,8 @@ export const BlockRegistry = {
   WATER: 7,
   OAK_PLANKS: 8,
   CRAFTING_TABLE: 9,
+  FURNACE: 10,
+  SMOOTH_STONE: 11,
 
   isOpaque(id) {
     return !!OPAQUE[id];

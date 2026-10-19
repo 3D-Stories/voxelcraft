@@ -12,8 +12,10 @@ import { BlockHighlight } from './render/BlockHighlight.js';
 import { Sky } from './render/Sky.js';
 import { detectWebGL } from './render/WebGLSupport.js';
 import { Inventory } from './core/Inventory.js';
+import { FurnaceManager } from './core/Furnace.js';
 import { HUD } from './ui/HUD.js';
 import { InventoryScreen } from './ui/InventoryScreen.js';
+import { FurnaceScreen } from './ui/FurnaceScreen.js';
 import { WorldStore } from './storage/WorldStore.js';
 
 const RENDER_DISTANCE = 4;
@@ -155,17 +157,51 @@ async function main() {
     restoring ? saved.inventory?.slots ?? [] : [],
     restoring ? saved.inventory?.selectedIndex ?? 0 : 0,
   );
+  // New worlds start with basic wooden tools so the first block is not a
+  // seven-second punch. Crafting upgrades to stone from there.
+  if (!restoring) {
+    inventory.add('wooden_pickaxe', 1);
+    inventory.add('wooden_axe', 1);
+    inventory.add('wooden_shovel', 1);
+    inventory.select(0);
+  }
+  const furnaces = new FurnaceManager();
+  if (restoring && saved.furnaces) furnaces.restore(saved.furnaces);
+
+  const uiState = { furnaceOpen: false };
   let inventoryScreen = null;
   const interaction = new BlockInteraction(player, world, renderer.domElement, {
     highlight,
     inventory,
-    onUseBlock: () => inventoryScreen?.openTable(),
+    onUseBlock: (target) => {
+      if (target.id === BlockRegistry.FURNACE) {
+        furnaceScreen?.openAt(target);
+      } else {
+        inventoryScreen?.openTable();
+      }
+    },
+    onBreak: (target) => {
+      if (target.id === BlockRegistry.FURNACE) {
+        furnaces.spill(target.x, target.y, target.z, inventory);
+      }
+    },
   });
 
   const hud = new HUD(inventory, appEl);
   inventoryScreen = new InventoryScreen(inventory, appEl, {
     player,
+    isBlocked: () => uiState.furnaceOpen,
     onToggle: (open) => {
+      controller.enabled = !open;
+      if (open) {
+        player.velocity.x = 0;
+        player.velocity.z = 0;
+      }
+    },
+  });
+  const furnaceScreen = new FurnaceScreen(furnaces, inventory, appEl, {
+    onToggle: (open) => {
+      uiState.furnaceOpen = open;
       controller.enabled = !open;
       if (open) {
         player.velocity.x = 0;
@@ -198,6 +234,7 @@ async function main() {
         pitch: player.pitch,
       },
       inventory: inventory.toJSON(),
+      furnaces: furnaces.toJSON(),
     });
   };
 
@@ -219,7 +256,8 @@ async function main() {
   setProgress(60, 'Starting renderer…');
   window.voxelcraft = {
     scene, camera, renderer, world, terrain, seed, sky, player, physics, controller,
-    interaction, highlight, inventory, hud, inventoryScreen, store, saveNow, autosave,
+    interaction, highlight, inventory, hud, inventoryScreen, furnaces, furnaceScreen,
+    store, saveNow, autosave,
   };
 
   let revealed = false;
@@ -238,6 +276,7 @@ async function main() {
       controller.update();
       physics.update(SIM_STEP);
       interaction.update(SIM_STEP);
+      furnaces.tick(1);
       sky.update(SIM_STEP, camera);
       accumulator -= SIM_STEP;
     }

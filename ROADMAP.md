@@ -97,7 +97,7 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 - [ ] Wool ×16, concrete/powder, terracotta ×16, glass/stained glass, glazed terracotta
 - [ ] Plants: grass, ferns, flowers, saplings, mushrooms, cactus, sugar cane, bamboo, vines, lily pads, kelp, seagrass, coral
 - [ ] Crops: wheat, carrots, potatoes, beetroot, melon, pumpkin, berries
-- [ ] Functional: crafting table, furnace, chest, barrel, hopper, dispenser, dropper, observer, piston/sticky piston, note block, jukebox, lever, buttons, pressure plates, tripwire, target, daylight detector, sculk sensor, lightning rod, beacon, conduit, respawn anchor, lodestone, bells
+- [~] Functional: crafting table and furnace done; chest, barrel, hopper, dispenser, dropper, observer, piston/sticky piston, note block, jukebox, lever, buttons, pressure plates, tripwire, target, daylight detector, sculk sensor, lightning rod, beacon, conduit, respawn anchor, lodestone, bells
 - [ ] Lighting: torches, lanterns, soul variants, campfire, candles, glowstone, sea lantern, shroomlight, froglight, amethyst
 - [ ] Decoration: banners, paintings, item frames, armor stands, flower pots, bookshelves, chiseled bookshelf, lectern, cauldron, composter, beehive, bee nest
 - [ ] Nether/End blocks, portal frames
@@ -175,7 +175,8 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 - [x] Crafting table block
 - [x] 2×2 / 3×3 grid crafting UI (shaped + shapeless matching)
 - [ ] Recipe book with unlock toasts
-- [ ] Furnace (smelting, fuel, XP), blast furnace, smoker
+- [x] Furnace (smelting 200 ticks, fuel, progress UI); XP pending
+- [ ] Blast furnace, smoker
 - [ ] Campfire cooking
 - [ ] Stonecutter, loom, cartography table, fletching table, smithing table
 - [ ] Brewing stand
@@ -294,7 +295,8 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 - [ ] Recipe book, advancements screen + toasts
 - [ ] Death screen with respawn/quit
 - [ ] Chat window, command blocks UI
-- [ ] Container screens: chest, barrel, hopper, furnace, brewing, enchanting, anvil
+- [x] Furnace screen (input/fuel/output, flame and progress)
+- [ ] Container screens: chest, barrel, hopper, brewing, enchanting, anvil
 - [ ] Sign editing, book & quill
 - [ ] Toast notifications (advancements, recipes)
 - [ ] Language support (at least en_us; localization-ready strings)
@@ -360,7 +362,7 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 
 ### Next up (ordered queue)
 1. ~~3×3 crafting grid + drag/drop inventory~~ — done
-2. Furnace + smelting + fuel + XP
+2. ~~Furnace + smelting + fuel~~ — done (XP pending)
 3. Health, damage, death/respawn, hunger/air HUD
 4. First hostile mob end-to-end (zombie + spawning + combat) to prove the entity pipeline
 5. Ore generation + iron/diamond tiers + armor

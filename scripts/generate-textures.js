@@ -66,7 +66,10 @@ const COLORS = {
   stoneHead: hexToRgb('#9c9c9c'),
   stoneDark: hexToRgb('#5c5c5c'),
   blade: hexToRgb('#d9d9d9'),
-  bladeDark: hexToRgb('#8a8a8a')
+  bladeDark: hexToRgb('#8a8a8a'),
+  smoothStone: hexToRgb('#a8a8a8'),
+  charcoal: hexToRgb('#2b2b2b'),
+  charcoalLight: hexToRgb('#4a4a4a')
 };
 
 function renderGrassTop(ctx, noise, rng) {
@@ -227,6 +230,61 @@ function renderCraftingTableSide(ctx, noise, rng) {
   }
 }
 
+function renderFurnaceTop(ctx, noise, rng) {
+  renderStone(ctx, noise, rng);
+  for (let i = 0; i < SIZE; i++) {
+    drawPixel(ctx, i, 0, COLORS.stoneDark);
+    drawPixel(ctx, i, SIZE - 1, COLORS.stoneDark);
+    drawPixel(ctx, 0, i, COLORS.stoneDark);
+    drawPixel(ctx, SIZE - 1, i, COLORS.stoneDark);
+  }
+  for (let x = 4; x <= 11; x++) {
+    drawPixel(ctx, x, 4, COLORS.stoneDark);
+    drawPixel(ctx, x, 11, COLORS.stoneDark);
+  }
+  for (let y = 4; y <= 11; y++) {
+    drawPixel(ctx, 4, y, COLORS.stoneDark);
+    drawPixel(ctx, 11, y, COLORS.stoneDark);
+  }
+}
+
+function renderFurnaceSide(ctx, noise, rng) {
+  renderStone(ctx, noise, rng);
+  for (let x = 3; x <= 12; x++) drawPixel(ctx, x, 7, COLORS.stoneDark);
+  for (let y = 8; y <= 14; y++) {
+    for (let x = 4; x <= 11; x++) {
+      if (y === 14 && (x === 4 || x === 11)) continue;
+      drawPixel(ctx, x, y, COLORS.stoneDark);
+    }
+  }
+  for (let x = 5; x <= 10; x++) drawPixel(ctx, x, 9, hexToRgb('#1a1a1a'));
+}
+
+function renderSmoothStone(ctx, noise, rng) {
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      let color = shade(COLORS.smoothStone, (rng() - 0.5) * 6);
+      if (x === 0 || y === 0 || x === SIZE - 1 || y === SIZE - 1) color = shade(color, -8);
+      if (noise(x * 0.3, y * 0.3) > 0.5) color = shade(color, -4);
+      drawPixel(ctx, x, y, color);
+    }
+  }
+}
+
+function charcoalIcon(ctx) {
+  for (let y = 5; y <= 12; y++) {
+    for (let x = 4; x <= 12; x++) {
+      const edge = (x === 4 || x === 12) && (y === 5 || y === 12);
+      if (edge) continue;
+      px(ctx, x, y, COLORS.charcoal);
+    }
+  }
+  for (let i = 0; i < 6; i++) {
+    px(ctx, 6 + i, 7, COLORS.charcoalLight);
+    px(ctx, 5 + i, 10, COLORS.charcoalLight);
+  }
+}
+
 // --- Item icons -------------------------------------------------------------
 
 function px(ctx, x, y, color) {
@@ -311,11 +369,15 @@ const TEXTURES = [
   { name: 'water', render: renderWater },
   { name: 'oak_planks', render: renderOakPlanks },
   { name: 'crafting_table_top', render: renderCraftingTableTop },
-  { name: 'crafting_table_side', render: renderCraftingTableSide }
+  { name: 'crafting_table_side', render: renderCraftingTableSide },
+  { name: 'furnace_top', render: renderFurnaceTop },
+  { name: 'furnace_side', render: renderFurnaceSide },
+  { name: 'smooth_stone', render: renderSmoothStone }
 ];
 
 const ITEM_TEXTURES = [
   { name: 'stick', render: stickIcon },
+  { name: 'charcoal', render: charcoalIcon },
   { name: 'wooden_pickaxe', render: (ctx) => toolIcon(ctx, 'pickaxe', COLORS.woodHead, COLORS.handleDark) },
   { name: 'stone_pickaxe', render: (ctx) => toolIcon(ctx, 'pickaxe', COLORS.stoneHead, COLORS.stoneDark) },
   { name: 'wooden_axe', render: (ctx) => toolIcon(ctx, 'axe', COLORS.woodHead, COLORS.handleDark) },

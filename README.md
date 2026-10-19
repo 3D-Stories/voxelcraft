@@ -6,7 +6,7 @@ A browser-based voxel sandbox game faithful to **Minecraft Java Edition 1.21.x**
 
 **Status: Phase 1 + survival slice.** The world renders and persists: Vite + Three.js, procedural 16×16 block and item textures with a greedy-meshed atlas, deterministic simplex terrain (plains, forest, desert with oak trees) streamed by circular render distance, a first-person player (WASD, jump, sneak, sprint, mouse look, gravity, AABB collision, swimming on a fixed 20 TPS tick), a 20-minute day/night cycle with sun, moon, stars and fog, and IndexedDB saves with autosave.
 
-The survival loop now works: breaking blocks **drops items into a 36-slot inventory** with stack counts, a 9-slot hotbar, **wooden and stone tools** with correct-tool mining speeds and durability, and **crafting** — planks/sticks/table from the inventory (E) and tools at a placed crafting table. Placeable water and a creative **god mode** (G) round it out.
+The survival loop works: new worlds start with **wooden tools**, breaking blocks **drops items into a 36-slot inventory**, and **crafting** runs on a 2×2 grid (E) or a placed table's 3×3 grid. A **furnace** smelts logs to charcoal and stone to smooth stone with real fuel values and progress. Placeable water, swimming and a creative **god mode** (G) round it out.
 
 ## Roadmap
 
@@ -44,7 +44,7 @@ npm run generate-textures # regenerate public/assets/textures/blocks/*.png
 | Look | Click the canvas to capture the mouse; Esc releases it |
 | Select hotbar slot | 1-9, or the mouse wheel |
 | Inventory | E — 36 slots + 2×2 crafting grid (click/right-click/shift-click to move items) |
-| Crafting table | Right-click a placed crafting table to open the 3×3 grid |
+| Use block | Right-click a placed crafting table (3×3 grid) or furnace (smelting UI) |
 | Break block | Left mouse (hold; speed depends on the held tool and block hardness) |
 | Place block | Right mouse (consumes the selected block; free in god mode) |
 | God mode | G — instant mining, 5-block reach, invulnerable; double-tap Space to fly (Space up, Shift down) |
@@ -54,7 +54,8 @@ npm run generate-textures # regenerate public/assets/textures/blocks/*.png
 
 1. Punch oak leaves/logs, then press **E** and use the **2×2 crafting grid**: one log → 4 **oak planks**, two planks stacked vertically → 4 **sticks**.
 2. Fill the 2×2 with planks to craft a **crafting table**; place it and right-click it for the **3×3 grid**.
-3. Craft a **wooden pickaxe** (3 planks + 2 sticks), then mine stone (it drops nothing by hand) for **stone tools**.
+3. Craft a **wooden pickaxe** (3 planks + 2 sticks) — new worlds already include one — then mine stone for **stone tools**.
+4. Craft a **furnace** (8 stone at the table): logs smelt to charcoal (80 s of fuel each), stone to smooth stone.
 
 Click a stack to pick it up, click again to place, right-click to split/place one, shift-click to move stacks. Stone drops stone (cobblestone is not in the block set yet), and iron/diamond tiers wait for ore generation.
 
