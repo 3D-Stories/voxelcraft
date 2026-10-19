@@ -1,13 +1,12 @@
 // src/player/BlockInteraction.js
-// Left-click mining (hardness-based, docs/06-research-mechanics.md 8.1) and
-// right-click placement (docs/00-master-prompt.md 5.5).
-// Break time: hardness x 1.5 if hand-harvestable, x 5 otherwise, 5x slower in
-// the air, rounded up to whole ticks (https://minecraft.wiki/w/Breaking#Mining_efficiency).
+// Left-click mining and right-click placement. Mining uses the held tool for
+// speed and harvest rules (docs/06-research-mechanics.md 8.1), drops items and
+// wears tools down; placement consumes the held block stack.
 
 import { BlockRegistry } from '../core/BlockRegistry.js';
+import { breakTicks, canHarvest } from '../core/Mining.js';
+import { dropForBlock, getItem } from '../core/ItemRegistry.js';
 import { raycastVoxel, BLOCK_REACH, CREATIVE_REACH } from './Raycast.js';
-
-const TICK_SECONDS = 0.05;
 
 export class BlockInteraction {
   constructor(player, world, domElement, options = {}) {
@@ -17,9 +16,10 @@ export class BlockInteraction {
     this.player = player;
     this.world = world;
     this.domElement = domElement;
+    this.inventory = options.inventory ?? null;
     this.highlight = options.highlight ?? null;
-    this.selectedBlock = options.selectedBlock ?? BlockRegistry.STONE;
     this.onBreak = options.onBreak ?? null;
+    this.onUseBlock = options.onUseBlock ?? null;
 
     this._mining = false;
     this._ticksMined = 0;
@@ -55,12 +55,10 @@ export class BlockInteraction {
     const target = this.getTarget();
     if (this.highlight) this.highlight.update(target);
 
-    // Creative/god mode breaks the targeted block instantly.
+    // Creative/god mode breaks the targeted block instantly, without drops.
     if (this.player.godMode) {
       if (this._mining && target) {
-        if (this.world.setBlock(target.x, target.y, target.z, BlockRegistry.AIR)) {
-          if (this.onBreak) this.onBreak(target);
-        }
+        this._breakBlock(target, { instant: true });
         this._targetKey = null;
       }
       return;
@@ -79,22 +77,35 @@ export class BlockInteraction {
       this._ticksMined = 0;
     }
 
-    const breakTime = BlockRegistry.getBreakTimeSeconds(target.id);
-    if (breakTime <= 0) return; // unbreakable (e.g. liquid)
+    const heldId = this.inventory?.selectedId ?? null;
+    const requiredTicks = breakTicks(target.id, heldId, this.player.onGround);
+    if (requiredTicks <= 0) return; // unbreakable (e.g. liquid)
 
-    const speedModifier = this.player.onGround ? 1 : 0.2;
-    // Break times are whole ticks; the epsilon absorbs binary rounding (e.g.
-    // 0.2 * 1.5 = 0.30000000000000004 should still be 6 ticks, not 7).
-    const requiredTicks = Math.ceil((breakTime / speedModifier) / TICK_SECONDS - 1e-6);
-    this._ticksMined += dt / TICK_SECONDS;
-
+    this._ticksMined += dt / 0.05;
     if (this._ticksMined < requiredTicks) return;
 
-    if (this.world.setBlock(target.x, target.y, target.z, BlockRegistry.AIR)) {
-      if (this.onBreak) this.onBreak(target);
-    }
+    this._breakBlock(target);
     this._ticksMined = 0;
     this._targetKey = null;
+  }
+
+  _breakBlock(target, { instant = false } = {}) {
+    if (!this.world.setBlock(target.x, target.y, target.z, BlockRegistry.AIR)) return false;
+
+    const heldId = this.inventory?.selectedId ?? null;
+    if (!instant) {
+      if (canHarvest(target.id, heldId)) {
+        const drop = dropForBlock(target.id);
+        if (drop) this.inventory?.add(drop, 1);
+      }
+      const held = heldId ? getItem(heldId) : null;
+      if (held?.kind === 'tool' && this.inventory) {
+        this.inventory.damageFromSlot(this.inventory.selectedIndex, 1);
+      }
+    }
+
+    if (this.onBreak) this.onBreak(target);
+    return true;
   }
 
   stopMining() {
@@ -118,6 +129,13 @@ export class BlockInteraction {
       this._ticksMined = 0;
       this._targetKey = null;
     } else if (event.button === 2) {
+      if (!this.player.sneaking) {
+        const target = this.getTarget();
+        if (target?.id === BlockRegistry.CRAFTING_TABLE && this.onUseBlock) {
+          this.onUseBlock(target);
+          return;
+        }
+      }
       this.placeBlock();
     }
   }
@@ -128,7 +146,11 @@ export class BlockInteraction {
 
   placeBlock() {
     if (document.pointerLockElement !== this.domElement) return false;
-    if (!this.selectedBlock) return false; // empty hotbar slot
+    const stack = this.inventory?.selected ?? null;
+    if (!stack) return false;
+    const held = getItem(stack.id);
+    if (!held || held.kind !== 'block') return false;
+
     const target = this.getTarget();
     if (!target) return false;
 
@@ -138,10 +160,16 @@ export class BlockInteraction {
 
     if (this.world.getBlock(x, y, z).id !== BlockRegistry.AIR) return false;
     // Liquids may be placed at the player's own feet; solids may not.
-    if (BlockRegistry.isSolid(this.selectedBlock) && this._blockIntersectsPlayer(x, y, z)) {
-      return false;
+    if (
+      BlockRegistry.isSolid(held.blockId)
+      && this._blockIntersectsPlayer(x, y, z)
+    ) return false;
+
+    if (!this.world.setBlock(x, y, z, held.blockId)) return false;
+    if (!this.player.godMode && this.inventory) {
+      this.inventory.removeFromSlot(this.inventory.selectedIndex, 1);
     }
-    return this.world.setBlock(x, y, z, this.selectedBlock);
+    return true;
   }
 
   _blockIntersectsPlayer(x, y, z) {

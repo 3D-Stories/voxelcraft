@@ -1,30 +1,23 @@
 // src/ui/HUD.js
-// Hotbar HUD (docs/00-master-prompt.md file tree, docs/11-features.md 6.1).
-// Slots render the block's side texture; 1-9 and the mouse wheel select slots.
+// Hotbar HUD: item icons, stack counts, tool durability, selection and the
+// god-mode badge. 1-9 and the mouse wheel select slots.
 
-import { FACE_TEXTURES } from '../core/BlockRegistry.js';
-import { HOTBAR_SIZE } from '../player/Hotbar.js';
+import { getItem, iconUrl } from '../core/ItemRegistry.js';
+import { HOTBAR_SIZE } from '../core/Inventory.js';
 import './styles.css';
 
-const TEXTURE_BASE = '/assets/textures/blocks';
-
-function iconSource(blockId) {
-  const spec = FACE_TEXTURES[blockId];
-  return spec ? `${TEXTURE_BASE}/${spec.side}.png` : null;
-}
-
 export class HUD {
-  constructor(hotbar, container = document.body) {
-    if (!hotbar || !container) {
-      throw new Error('HUD requires a hotbar and a container element');
+  constructor(inventory, container = document.body) {
+    if (!inventory || !container) {
+      throw new Error('HUD requires an inventory and a container element');
     }
-    this.hotbar = hotbar;
+    this.inventory = inventory;
     this.container = container;
     this._slots = [];
     this._unsubscribe = null;
 
     this._build();
-    this._unsubscribe = hotbar.subscribe(() => this.render());
+    this._unsubscribe = inventory.subscribe(() => this.render());
     this.render();
 
     this._onKeyDown = (event) => this._handleKeyDown(event);
@@ -34,11 +27,14 @@ export class HUD {
   }
 
   render() {
-    const slots = this.hotbar.slots;
-    const selected = this.hotbar.selectedIndex;
+    const slots = this.inventory.hotbar;
+    const selected = this.inventory.selectedIndex;
     for (let i = 0; i < this._slots.length; i++) {
-      const { el, img } = this._slots[i];
-      const src = iconSource(slots[i]);
+      const { el, img, countEl, durability, durabilityFill } = this._slots[i];
+      const stack = slots[i];
+      const def = stack ? getItem(stack.id) : null;
+      const src = stack ? iconUrl(stack.id) : null;
+
       if (src) {
         if (img.getAttribute('src') !== src) img.src = src;
         img.hidden = false;
@@ -46,6 +42,18 @@ export class HUD {
         img.removeAttribute('src');
         img.hidden = true;
       }
+
+      countEl.textContent = stack && stack.count > 1 ? String(stack.count) : '';
+
+      if (def?.durability && stack) {
+        const pct = Math.max(0, 1 - (stack.damage ?? 0) / def.durability);
+        durability.hidden = false;
+        durabilityFill.style.width = `${Math.round(pct * 100)}%`;
+        durabilityFill.style.background = pct > 0.5 ? '#4caf50' : pct > 0.2 ? '#ffc107' : '#f44336';
+      } else {
+        durability.hidden = true;
+      }
+
       el.classList.toggle('selected', i === selected);
       el.setAttribute('aria-pressed', i === selected ? 'true' : 'false');
     }
@@ -77,20 +85,30 @@ export class HUD {
       slot.className = 'hotbar-slot';
       slot.dataset.slot = String(i);
       slot.setAttribute('aria-label', `Hotbar slot ${i + 1}`);
-      slot.addEventListener('click', () => this.hotbar.select(i));
+      slot.addEventListener('click', () => this.inventory.select(i));
 
       const img = document.createElement('img');
       img.alt = '';
       img.draggable = false;
       img.hidden = true;
 
+      const countEl = document.createElement('span');
+      countEl.className = 'hotbar-count';
+
+      const durability = document.createElement('div');
+      durability.className = 'hotbar-durability';
+      durability.hidden = true;
+      const durabilityFill = document.createElement('div');
+      durabilityFill.className = 'hotbar-durability-fill';
+      durability.appendChild(durabilityFill);
+
       const index = document.createElement('span');
       index.className = 'hotbar-index';
       index.textContent = String(i + 1);
 
-      slot.append(img, index);
+      slot.append(img, countEl, durability, index);
       this.el.appendChild(slot);
-      this._slots.push({ el: slot, img });
+      this._slots.push({ el: slot, img, countEl, durability, durabilityFill });
     }
 
     this.container.appendChild(this.el);
@@ -107,12 +125,12 @@ export class HUD {
     const match = /^(?:Digit|Numpad)([1-9])$/.exec(event.code);
     if (!match) return;
     event.preventDefault();
-    this.hotbar.select(Number(match[1]) - 1);
+    this.inventory.select(Number(match[1]) - 1);
   }
 
   _handleWheel(event) {
     if (event.deltaY === 0) return;
     event.preventDefault();
-    this.hotbar.cycle(event.deltaY > 0 ? 1 : -1);
+    this.inventory.cycle(event.deltaY > 0 ? 1 : -1);
   }
 }

@@ -8,7 +8,8 @@ const { createCanvas } = canvasPkg;
 
 const SIZE = 16;
 const SEED = 0x5eedc0de;
-const OUT_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'assets', 'textures', 'blocks');
+const BLOCKS_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'assets', 'textures', 'blocks');
+const ITEMS_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'assets', 'textures', 'items');
 
 function hexToRgb(hex) {
   const value = parseInt(hex.slice(1), 16);
@@ -56,7 +57,16 @@ const COLORS = {
   logSide: hexToRgb('#6e5431'),
   leaves: hexToRgb('#4a6b2a'),
   sand: hexToRgb('#e6d9a5'),
-  water: hexToRgb('#3f6fc0')
+  water: hexToRgb('#3f6fc0'),
+  planks: hexToRgb('#b08a55'),
+  planksDark: hexToRgb('#6f5230'),
+  handle: hexToRgb('#8a6a3f'),
+  handleDark: hexToRgb('#4a3520'),
+  woodHead: hexToRgb('#c9a266'),
+  stoneHead: hexToRgb('#9c9c9c'),
+  stoneDark: hexToRgb('#5c5c5c'),
+  blade: hexToRgb('#d9d9d9'),
+  bladeDark: hexToRgb('#8a8a8a')
 };
 
 function renderGrassTop(ctx, noise, rng) {
@@ -173,6 +183,122 @@ function renderWater(ctx) {
   ctx.fillRect(0, 0, SIZE, SIZE);
 }
 
+function renderOakPlanks(ctx, noise, rng) {
+  for (let y = 0; y < SIZE; y++) {
+    for (let x = 0; x < SIZE; x++) {
+      const board = Math.floor(y / 4);
+      let color = shade(COLORS.planks, (rng() - 0.5) * 10 + (board % 2) * 5);
+      if (y % 4 === 3) color = COLORS.planksDark;
+      else if ((x + board * 5) % 8 === 0) color = shade(COLORS.planksDark, 8);
+      if (noise(x * 0.5, y * 0.5) > 0.4) color = shade(color, -7);
+      drawPixel(ctx, x, y, color);
+    }
+  }
+}
+
+function renderCraftingTableTop(ctx, noise, rng) {
+  renderOakPlanks(ctx, noise, rng);
+  for (const line of [0, 5, 10, 15]) {
+    for (let i = 0; i < SIZE; i++) {
+      drawPixel(ctx, line, i, COLORS.planksDark);
+      drawPixel(ctx, i, line, COLORS.planksDark);
+    }
+  }
+}
+
+function renderCraftingTableSide(ctx, noise, rng) {
+  renderOakPlanks(ctx, noise, rng);
+  for (let x = 0; x < SIZE; x++) {
+    for (let y = 0; y < 3; y++) {
+      drawPixel(ctx, x, y, shade(COLORS.planksDark, -4));
+    }
+  }
+  // A simple saw + hammer motif.
+  for (let i = 0; i < 7; i++) {
+    drawPixel(ctx, 3 + i, 6 + i, COLORS.stoneHead);
+    drawPixel(ctx, 4 + i, 6 + i, COLORS.stoneDark);
+  }
+  for (let i = 0; i < 4; i++) {
+    drawPixel(ctx, 10, 8 + i, COLORS.handle);
+    drawPixel(ctx, 11, 8 + i, COLORS.handleDark);
+  }
+  for (let x = 9; x <= 13; x++) {
+    drawPixel(ctx, x, 7, COLORS.stoneHead);
+  }
+}
+
+// --- Item icons -------------------------------------------------------------
+
+function px(ctx, x, y, color) {
+  if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) return;
+  ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`;
+  ctx.fillRect(x, y, 1, 1);
+}
+
+function line(ctx, x0, y0, x1, y1, color, width = 1) {
+  const dx = Math.abs(x1 - x0);
+  const dy = -Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1;
+  const sy = y0 < y1 ? 1 : -1;
+  let err = dx + dy;
+  let x = x0;
+  let y = y0;
+  for (;;) {
+    for (let ox = 0; ox < width; ox++) {
+      for (let oy = 0; oy < width; oy++) px(ctx, x + ox, y + oy, color);
+    }
+    if (x === x1 && y === y1) break;
+    const e2 = 2 * err;
+    if (e2 >= dy) { err += dy; x += sx; }
+    if (e2 <= dx) { err += dx; y += sy; }
+  }
+}
+
+function handle(ctx) {
+  line(ctx, 10, 13, 6, 8, COLORS.handle, 2);
+  line(ctx, 11, 13, 7, 8, COLORS.handleDark, 1);
+}
+
+function toolIcon(ctx, type, headColor, edgeColor) {
+  handle(ctx);
+  if (type === 'pickaxe') {
+    line(ctx, 3, 6, 7, 3, headColor, 2);
+    line(ctx, 7, 3, 12, 5, headColor, 2);
+    line(ctx, 3, 6, 11, 5, edgeColor, 1);
+    px(ctx, 2, 7, edgeColor);
+    px(ctx, 12, 5, edgeColor);
+  } else if (type === 'axe') {
+    for (let y = 3; y <= 7; y++) {
+      for (let x = 3; x <= 8; x++) {
+        if ((x === 3 && y > 4) || (y === 7 && x < 5)) continue;
+        px(ctx, x, y, headColor);
+      }
+    }
+    line(ctx, 3, 4, 7, 3, edgeColor, 1);
+    line(ctx, 8, 4, 8, 7, edgeColor, 1);
+  } else if (type === 'shovel') {
+    for (let y = 2; y <= 5; y++) {
+      for (let x = 9; x <= 13; x++) {
+        if ((x === 9 || x === 13) && (y === 2 || y === 5)) continue;
+        px(ctx, x, y, headColor);
+      }
+    }
+    line(ctx, 10, 2, 13, 2, edgeColor, 1);
+    line(ctx, 13, 2, 13, 5, edgeColor, 1);
+  } else if (type === 'sword') {
+    line(ctx, 4, 13, 12, 3, COLORS.blade, 2);
+    line(ctx, 4, 13, 11, 3, edgeColor, 1);
+    line(ctx, 3, 12, 7, 14, COLORS.handle, 2);
+    line(ctx, 2, 11, 6, 13, COLORS.handleDark, 1);
+    line(ctx, 12, 2, 13, 3, COLORS.blade, 1);
+  }
+}
+
+function stickIcon(ctx) {
+  line(ctx, 5, 13, 10, 4, COLORS.handle, 2);
+  line(ctx, 6, 13, 11, 4, COLORS.handleDark, 1);
+}
+
 const TEXTURES = [
   { name: 'grass_top', render: renderGrassTop },
   { name: 'grass_side', render: renderGrassSide },
@@ -182,10 +308,26 @@ const TEXTURES = [
   { name: 'oak_log_side', render: renderOakLogSide },
   { name: 'oak_leaves', render: renderOakLeaves },
   { name: 'sand', render: renderSand },
-  { name: 'water', render: renderWater }
+  { name: 'water', render: renderWater },
+  { name: 'oak_planks', render: renderOakPlanks },
+  { name: 'crafting_table_top', render: renderCraftingTableTop },
+  { name: 'crafting_table_side', render: renderCraftingTableSide }
 ];
 
-mkdirSync(OUT_DIR, { recursive: true });
+const ITEM_TEXTURES = [
+  { name: 'stick', render: stickIcon },
+  { name: 'wooden_pickaxe', render: (ctx) => toolIcon(ctx, 'pickaxe', COLORS.woodHead, COLORS.handleDark) },
+  { name: 'stone_pickaxe', render: (ctx) => toolIcon(ctx, 'pickaxe', COLORS.stoneHead, COLORS.stoneDark) },
+  { name: 'wooden_axe', render: (ctx) => toolIcon(ctx, 'axe', COLORS.woodHead, COLORS.handleDark) },
+  { name: 'stone_axe', render: (ctx) => toolIcon(ctx, 'axe', COLORS.stoneHead, COLORS.stoneDark) },
+  { name: 'wooden_shovel', render: (ctx) => toolIcon(ctx, 'shovel', COLORS.woodHead, COLORS.handleDark) },
+  { name: 'stone_shovel', render: (ctx) => toolIcon(ctx, 'shovel', COLORS.stoneHead, COLORS.stoneDark) },
+  { name: 'wooden_sword', render: (ctx) => toolIcon(ctx, 'sword', COLORS.woodHead, COLORS.handleDark) },
+  { name: 'stone_sword', render: (ctx) => toolIcon(ctx, 'sword', COLORS.stoneHead, COLORS.stoneDark) }
+];
+
+mkdirSync(BLOCKS_DIR, { recursive: true });
+mkdirSync(ITEMS_DIR, { recursive: true });
 
 TEXTURES.forEach((texture, index) => {
   const rng = mulberry32(SEED + index * 0x9e3779b9);
@@ -193,6 +335,14 @@ TEXTURES.forEach((texture, index) => {
   const canvas = createCanvas(SIZE, SIZE);
   const ctx = canvas.getContext('2d');
   texture.render(ctx, noise, rng);
-  writeFileSync(join(OUT_DIR, `${texture.name}.png`), canvas.toBuffer('image/png'));
-  console.log(`wrote ${texture.name}.png`);
+  writeFileSync(join(BLOCKS_DIR, `${texture.name}.png`), canvas.toBuffer('image/png'));
+  console.log(`wrote blocks/${texture.name}.png`);
+});
+
+ITEM_TEXTURES.forEach((texture, index) => {
+  const canvas = createCanvas(SIZE, SIZE);
+  const ctx = canvas.getContext('2d');
+  texture.render(ctx);
+  writeFileSync(join(ITEMS_DIR, `${texture.name}.png`), canvas.toBuffer('image/png'));
+  console.log(`wrote items/${texture.name}.png`);
 });

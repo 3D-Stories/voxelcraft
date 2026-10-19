@@ -11,7 +11,7 @@ import { BlockInteraction } from './player/BlockInteraction.js';
 import { BlockHighlight } from './render/BlockHighlight.js';
 import { Sky } from './render/Sky.js';
 import { detectWebGL } from './render/WebGLSupport.js';
-import { Hotbar } from './player/Hotbar.js';
+import { Inventory } from './core/Inventory.js';
 import { HUD } from './ui/HUD.js';
 import { InventoryScreen } from './ui/InventoryScreen.js';
 import { WorldStore } from './storage/WorldStore.js';
@@ -150,25 +150,21 @@ async function main() {
   const controller = new PlayerController(player, renderer.domElement);
   const cameraController = new CameraController(camera, player);
   const highlight = new BlockHighlight(scene);
-  const interaction = new BlockInteraction(player, world, renderer.domElement, { highlight });
 
-  const hotbar = new Hotbar([
-    BlockRegistry.GRASS,
-    BlockRegistry.DIRT,
-    BlockRegistry.STONE,
-    BlockRegistry.SAND,
-    BlockRegistry.OAK_LOG,
-    BlockRegistry.OAK_LEAVES,
-    BlockRegistry.WATER,
-  ]);
-  interaction.selectedBlock = hotbar.selectedBlock;
-  hotbar.subscribe((bar) => {
-    interaction.selectedBlock = bar.selectedBlock;
+  const inventory = new Inventory(
+    restoring ? saved.inventory?.slots ?? [] : [],
+    restoring ? saved.inventory?.selectedIndex ?? 0 : 0,
+  );
+  let inventoryScreen = null;
+  const interaction = new BlockInteraction(player, world, renderer.domElement, {
+    highlight,
+    inventory,
+    onUseBlock: () => inventoryScreen?.openTable(),
   });
 
-  const hud = new HUD(hotbar, appEl);
-  controller.onGodModeChange = (on) => hud.setGodMode(on);
-  const inventory = new InventoryScreen(hotbar, appEl, {
+  const hud = new HUD(inventory, appEl);
+  inventoryScreen = new InventoryScreen(inventory, appEl, {
+    player,
     onToggle: (open) => {
       controller.enabled = !open;
       if (open) {
@@ -177,6 +173,10 @@ async function main() {
       }
     },
   });
+  controller.onGodModeChange = (on) => {
+    hud.setGodMode(on);
+    if (inventoryScreen.open) inventoryScreen.render();
+  };
 
   document.addEventListener('pointerlockchange', () => {
     if (hintEl) hintEl.style.display = document.pointerLockElement ? 'none' : 'block';
@@ -197,6 +197,7 @@ async function main() {
         yaw: player.yaw,
         pitch: player.pitch,
       },
+      inventory: inventory.toJSON(),
     });
   };
 
@@ -218,7 +219,7 @@ async function main() {
   setProgress(60, 'Starting renderer…');
   window.voxelcraft = {
     scene, camera, renderer, world, terrain, seed, sky, player, physics, controller,
-    interaction, highlight, hotbar, hud, inventory, store, saveNow, autosave,
+    interaction, highlight, inventory, hud, inventoryScreen, store, saveNow, autosave,
   };
 
   let revealed = false;

@@ -78,6 +78,29 @@
   pointer-events: none;
 }
 
+.hotbar-count {
+  position: absolute; right: 3px; bottom: 1px;
+  font: bold 11px 'Courier New', monospace;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+  pointer-events: none;
+}
+
+.hotbar-durability {
+  position: absolute; left: 5px; right: 5px; bottom: 3px;
+  height: 3px;
+  background: #222;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hotbar-durability[hidden] { display: none; }
+
+.hotbar-durability-fill {
+  width: 100%; height: 100%;
+  background: #4caf50;
+}
+
 #inventory {
   position: fixed; inset: 0;
   display: none;
@@ -105,11 +128,105 @@
   text-transform: uppercase;
 }
 
+.inventory-panel h3 {
+  margin: 4px 0 8px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #bbb;
+}
+
 .inventory-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  margin-bottom: 14px;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.inv-slot {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(139, 139, 139, 0.25);
+  border: 2px solid #444;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.inv-slot.hotbar-row { border-color: #666; }
+.inv-slot.selected { border-color: #fff; }
+
+.inv-slot img {
+  width: 30px; height: 30px;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.inv-count {
+  position: absolute; right: 2px; bottom: 1px;
+  font: bold 10px 'Courier New', monospace;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+  pointer-events: none;
+}
+
+.recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.recipe {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 3px;
+}
+
+.recipe-output {
+  flex: 0 0 40px;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(139, 139, 139, 0.25);
+  border: 2px solid #555;
+  border-radius: 2px;
+}
+
+.recipe-output img { width: 28px; height: 28px; image-rendering: pixelated; }
+
+.recipe-info { flex: 1; min-width: 0; }
+.recipe-info strong { display: block; font-size: 12px; }
+.recipe-ingredients { display: flex; gap: 8px; margin-top: 2px; }
+.recipe-ingredient {
+  display: flex; align-items: center; gap: 3px;
+  color: #bbb; font-size: 11px;
+}
+.recipe-ingredient img { width: 16px; height: 16px; image-rendering: pixelated; }
+
+.recipe-craft {
+  padding: 5px 10px;
+  background: #4caf50;
+  border: 0; border-radius: 3px;
+  color: #fff;
+  font: 12px 'Courier New', monospace;
+  cursor: pointer;
+}
+
+.recipe-craft:disabled {
+  background: #555;
+  color: #999;
+  cursor: default;
+}
+
+.creative-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
 }
 
 .inventory-item {
@@ -122,11 +239,6 @@
 }
 
 .inventory-item:hover { border-color: #fff; }
+.inventory-item img { width: 40px; height: 40px; image-rendering: pixelated; pointer-events: none; }
 
-.inventory-item img {
-  width: 40px; height: 40px;
-  image-rendering: pixelated;
-  pointer-events: none;
-}
-
-.inventory-note { margin: 0; color: #aaa; font-size: 12px; }
+.inventory-note { margin: 10px 0 0; color: #aaa; font-size: 12px; }

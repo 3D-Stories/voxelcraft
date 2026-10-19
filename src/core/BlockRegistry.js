@@ -1,16 +1,20 @@
-const OPAQUE = new Uint8Array([0, 1, 1, 1, 1, 1, 0, 0]);
+const OPAQUE = new Uint8Array([0, 1, 1, 1, 1, 1, 0, 0, 1, 1]);
 
 // Water is not a solid block: https://minecraft.wiki/w/Water
-const SOLID = new Uint8Array([0, 1, 1, 1, 1, 1, 1, 0]);
+const SOLID = new Uint8Array([0, 1, 1, 1, 1, 1, 1, 0, 1, 1]);
 
-const LIQUID = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1]);
+const LIQUID = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 1, 0, 0]);
 
 // Hardness: docs/01-research-blocks.md (stone 1.5, grass 0.6, dirt/sand 0.5,
 // oak log 2.0, oak leaves 0.2). Liquids cannot be targeted or broken.
-const HARDNESS = new Float64Array([0, 1.5, 0.6, 0.5, 0.5, 2.0, 0.2, 0]);
+const HARDNESS = new Float64Array([0, 1.5, 0.6, 0.5, 0.5, 2.0, 0.2, 0, 2.0, 2.5]);
 
 // Stone needs a pickaxe; the other starting blocks can be harvested by hand.
-const HAND_HARVEST = new Uint8Array([0, 0, 1, 1, 1, 1, 1, 0]);
+const HAND_HARVEST = new Uint8Array([0, 0, 1, 1, 1, 1, 1, 0, 1, 1]);
+
+// Correct tool for speed bonuses (null = any/hand); required for drops when
+// the block cannot be hand-harvested (docs/01-research-blocks.md).
+const TOOL = ['', 'pickaxe', 'shovel', 'shovel', 'shovel', 'axe', '', '', 'axe', 'axe'];
 
 export const FACE_TEXTURES = [
   null,
@@ -21,6 +25,8 @@ export const FACE_TEXTURES = [
   { top: 'oak_log_top', bottom: 'oak_log_top', side: 'oak_log_side' },
   { top: 'oak_leaves', bottom: 'oak_leaves', side: 'oak_leaves' },
   { top: 'water', bottom: 'water', side: 'water' },
+  { top: 'oak_planks', bottom: 'oak_planks', side: 'oak_planks' },
+  { top: 'crafting_table_top', bottom: 'oak_planks', side: 'crafting_table_side' },
 ];
 
 export const BlockRegistry = {
@@ -32,6 +38,8 @@ export const BlockRegistry = {
   OAK_LOG: 5,
   OAK_LEAVES: 6,
   WATER: 7,
+  OAK_PLANKS: 8,
+  CRAFTING_TABLE: 9,
 
   isOpaque(id) {
     return !!OPAQUE[id];
@@ -55,6 +63,15 @@ export const BlockRegistry = {
 
   getHardness(id) {
     return HARDNESS[id] ?? 0;
+  },
+
+  // 'pickaxe' | 'axe' | 'shovel' | '' for the block's preferred tool.
+  getTool(id) {
+    return TOOL[id] ?? '';
+  },
+
+  canHarvestByHand(id) {
+    return !!HAND_HARVEST[id];
   },
 
   // Bare-hand break time on the ground, in seconds. Base time = hardness x 1.5

@@ -4,7 +4,9 @@ A browser-based voxel sandbox game faithful to **Minecraft Java Edition 1.21.x**
 
 **Live:** https://voxelcraft-3d-stories.vercel.app/
 
-**Status: Phase 1 vertical slice.** The client is feature-complete for the first milestone: Vite + Three.js scaffold, procedural 16×16 textures and atlas, the chunk data model (16×16×384, Y −64..320), a greedy mesher with tiled atlas textures, deterministic simplex terrain (plains, forest and desert with oak trees) streamed by circular render distance, a first-person player (WASD, jump, sneak, sprint, mouse look, gravity and AABB collision on a fixed 20 TPS tick), block breaking/placement with hardness-based mining times and a targeted-block outline, a 9-slot hotbar with a simple block palette, placeable water with swimming, a creative god mode (flight + instant mining), a 20-minute day/night cycle with sun, moon, stars and fog, and IndexedDB world saving with autosave.
+**Status: Phase 1 + survival slice.** The world renders and persists: Vite + Three.js, procedural 16×16 block and item textures with a greedy-meshed atlas, deterministic simplex terrain (plains, forest, desert with oak trees) streamed by circular render distance, a first-person player (WASD, jump, sneak, sprint, mouse look, gravity, AABB collision, swimming on a fixed 20 TPS tick), a 20-minute day/night cycle with sun, moon, stars and fog, and IndexedDB saves with autosave.
+
+The survival loop now works: breaking blocks **drops items into a 36-slot inventory** with stack counts, a 9-slot hotbar, **wooden and stone tools** with correct-tool mining speeds and durability, and **crafting** — planks/sticks/table from the inventory (E) and tools at a placed crafting table. Placeable water and a creative **god mode** (G) round it out.
 
 ## Specification
 
@@ -37,11 +39,20 @@ npm run generate-textures # regenerate public/assets/textures/blocks/*.png
 | Sprint | Left Ctrl, or double-tap W |
 | Look | Click the canvas to capture the mouse; Esc releases it |
 | Select hotbar slot | 1-9, or the mouse wheel |
-| Inventory | E (click a block to put it in the selected slot) |
-| Break block | Left mouse (hold; time depends on block hardness) |
-| Place block | Right mouse (places the selected hotbar block) |
+| Inventory | E — 36 slots and basic crafting recipes; click a hotbar slot to select it |
+| Crafting table | Right-click a placed crafting table to open the tool recipes |
+| Break block | Left mouse (hold; speed depends on the held tool and block hardness) |
+| Place block | Right mouse (consumes the selected block; free in god mode) |
 | God mode | G — instant mining, 5-block reach, invulnerable; double-tap Space to fly (Space up, Shift down) |
 | Swim | Space to rise, Shift to dive (water slows you down) |
+
+### Progression
+
+1. Punch oak leaves/logs, then press **E** and craft **oak planks** (1 log → 4) and **sticks** (2 planks → 4).
+2. Craft a **crafting table** (4 planks), place it, and right-click it.
+3. Craft a **wooden pickaxe** (3 planks + 2 sticks), then mine stone (it drops nothing by hand) for **stone tools**.
+
+Crafting currently uses recipe lists rather than the 3×3 grid. Stone drops stone (cobblestone is not in the block set yet), and iron/diamond tiers wait for ore generation.
 
 ### Worlds and saves
 
