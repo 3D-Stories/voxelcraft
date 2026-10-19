@@ -50,6 +50,7 @@
       color: #f44336;
       display: none;
     }
+    /* Gameplay HUD styles live in src/ui/styles.css */
   </style>
 </head>
 <body>
@@ -59,7 +60,10 @@
     <div class="status" id="loading-status">Loading engine…</div>
     <div class="error" id="loading-error"></div>
   </div>
-  <div id="app" style="display:none; width:100%; height:100%;"></div>
+  <div id="app" style="display:none; width:100%; height:100%;">
+    <div id="crosshair"></div>
+    <div id="hint">Click to capture the mouse · WASD move · Space jump · 1-9 / wheel select · E inventory · Left-click break · Right-click place</div>
+  </div>
   
   <script type="module" src="/src/main.js"></script>
   <noscript>

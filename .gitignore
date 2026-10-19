@@ -6,6 +6,9 @@ node_modules/
 dist/
 build/
 
+# Local tooling
+.playwright-cli/
+
 # Editor
 .vscode/
 .idea/
