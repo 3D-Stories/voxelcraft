@@ -10,6 +10,7 @@ import { CameraController } from './player/CameraController.js';
 import { BlockInteraction } from './player/BlockInteraction.js';
 import { BlockHighlight } from './render/BlockHighlight.js';
 import { Sky } from './render/Sky.js';
+import { detectWebGL } from './render/WebGLSupport.js';
 import { Hotbar } from './player/Hotbar.js';
 import { HUD } from './ui/HUD.js';
 import { InventoryScreen } from './ui/InventoryScreen.js';
@@ -56,6 +57,16 @@ function showError(message) {
 
 async function main() {
   console.log(`VoxelCraft v${__VERSION__} built at ${__BUILD_TIME__}`);
+
+  if (!detectWebGL()) {
+    showError(
+      'WebGL is disabled in this browser. Enable hardware acceleration '
+      + '(browser Settings → System), or open the game in a WebGL-capable browser, '
+      + 'then reload this page.',
+    );
+    return;
+  }
+
   setProgress(10, 'Creating world…');
 
   const scene = new THREE.Scene();
