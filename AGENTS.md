@@ -5,7 +5,7 @@
 The complete spec for VoxelCraft — a browser-based Minecraft Java Edition 1.21 clone
 (Three.js + vanilla JS, static Vercel hosting) — lives in `docs/` (13 design files,
 committed as the initial commit of the GitHub repo `voxelcraft`:
-https://github.com/crandrosoff/voxelcraft). No game code or `package.json` exists yet.
+https://github.com/3D-Stories/voxelcraft). No game code or `package.json` exists yet.
 The build brief is `docs/00-master-prompt.md`: it mandates creating the GitHub repo and
 linking Vercel before writing code (§0.5), forbids starting game code before the plan is
 confirmed (§14), and contains the phased roadmap (§11).
@@ -50,13 +50,17 @@ clean → `npm run preview` smoke test 60+ s → check the Vercel deploy logs an
 console. A headless browser smoke test is expected; the `playwright-cli` skill is
 available on this host.
 
-## Deploy — verified environment gap
+## Deploy (12-deployment.md §3.4/§17)
 
-The spec forbids the Vercel CLI and dashboard and assumes GitHub + Vercel MCP
-(12-deployment.md §3.4/§17). In this environment neither MCP is configured. Verified here:
-`gh` is authenticated as `crandrosoff`; the `vercel` CLI is installed but not logged in.
-Surface this to the user and get a decision before deploying — do not silently substitute
-a method, and do not ask the user to run commands the spec tells the agent to own.
+The spec requires all Vercel operations via MCP — never the CLI or dashboard.
+Vercel MCP is configured globally in opencode (`~/.config/opencode/opencode.jsonc`,
+key `vercel` → `https://mcp.vercel.com`, added 2026-10-19). If its tools report
+unauthenticated, run `opencode mcp auth vercel` once (browser consent), then restart
+opencode — config and credentials load at startup. Repo linking is covered by the
+`create_git_project` tool (verified in the Vercel MCP tool reference, 2026-10-19).
+`gh` is authenticated as `crandrosoff` (admin of the `3D-Stories` org); the `vercel`
+CLI is installed but deliberately unused and unauthenticated. The GitHub repo is
+private (https://github.com/3D-Stories/voxelcraft) as of 2026-10-19.
 
 ## Git & release conventions (master prompt §0.5)
 
