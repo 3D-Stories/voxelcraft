@@ -70,6 +70,9 @@ export class HUD {
       el.classList.toggle('selected', i === selected);
       el.setAttribute('aria-pressed', i === selected ? 'true' : 'false');
     }
+
+    const def = this.inventory.selectedId ? getItem(this.inventory.selectedId) : null;
+    this.heldNameEl.textContent = def ? def.name : '';
   }
 
   setVitals() {
@@ -109,12 +112,23 @@ export class HUD {
     this.badge.hidden = !on;
   }
 
+  showToast(text) {
+    this.toastEl.textContent = text;
+    this.toastEl.classList.add('show');
+    if (this._toastTimer) clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => {
+      this.toastEl.classList.remove('show');
+    }, 1600);
+  }
+
   destroy() {
     if (this._unsubscribe) this._unsubscribe();
     document.removeEventListener('keydown', this._onKeyDown);
     document.removeEventListener('wheel', this._onWheel);
     this.el.remove();
     this.badge.remove();
+    this.heldNameEl.remove();
+    this.toastEl.remove();
     this.vitalsEl.remove();
     this.flashEl.remove();
     this.deathEl.remove();
@@ -161,6 +175,14 @@ export class HUD {
     }
 
     this.container.appendChild(this.el);
+
+    this.heldNameEl = document.createElement('div');
+    this.heldNameEl.id = 'held-name';
+    this.container.appendChild(this.heldNameEl);
+
+    this.toastEl = document.createElement('div');
+    this.toastEl.id = 'toast';
+    this.container.appendChild(this.toastEl);
 
     this.badge = document.createElement('div');
     this.badge.id = 'godmode-badge';

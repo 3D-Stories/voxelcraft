@@ -21,6 +21,8 @@ export class BlockInteraction {
     this.mobs = options.mobs ?? null;
     this.highlight = options.highlight ?? null;
     this.breakOverlay = options.breakOverlay ?? null;
+    this.heldItem = options.heldItem ?? null;
+    this.onMessage = options.onMessage ?? null;
     this.onBreak = options.onBreak ?? null;
     this.onUseBlock = options.onUseBlock ?? null;
 
@@ -28,6 +30,7 @@ export class BlockInteraction {
     this._ticksMined = 0;
     this._targetKey = null;
     this._lastAttack = 0;
+    this._swingTimer = 0;
     this._cleanup = [];
 
     this._listen(document, 'mousedown', (event) => this._onMouseDown(event));
@@ -87,6 +90,11 @@ export class BlockInteraction {
     const requiredTicks = breakTicks(target.id, heldId, this.player.onGround);
     if (requiredTicks <= 0) return; // unbreakable (e.g. liquid)
 
+    this._swingTimer -= dt;
+    if (this._swingTimer <= 0) {
+      this._swingTimer = 0.25;
+      this.heldItem?.swing();
+    }
     this._ticksMined += dt / 0.05;
     const progress = Math.min(1, this._ticksMined / requiredTicks);
     this.breakOverlay?.update(target, progress);
@@ -140,6 +148,7 @@ export class BlockInteraction {
   _onMouseDown(event) {
     if (document.pointerLockElement !== this.domElement) return;
     if (event.button === 0) {
+      this.heldItem?.swing();
       if (this.mobs) {
         const now = performance.now();
         if (now - this._lastAttack >= 500) {
@@ -162,9 +171,12 @@ export class BlockInteraction {
     } else if (event.button === 2) {
       const selectedId = this.inventory?.selectedId ?? null;
       const held = selectedId ? getItem(selectedId) : null;
+      this.heldItem?.swing();
       if (held?.kind === 'food' && this.survival && this.inventory) {
         if (this.survival.eat(selectedId)) {
           this.inventory.removeFromSlot(this.inventory.selectedIndex, 1);
+        } else {
+          this.onMessage?.('You are not hungry');
         }
         return;
       }

@@ -10,6 +10,7 @@ import { CameraController } from './player/CameraController.js';
 import { BlockInteraction } from './player/BlockInteraction.js';
 import { BlockHighlight } from './render/BlockHighlight.js';
 import { BreakOverlay } from './render/BreakOverlay.js';
+import { HeldItem } from './render/HeldItem.js';
 import { Sky } from './render/Sky.js';
 import { detectWebGL } from './render/WebGLSupport.js';
 import { Inventory } from './core/Inventory.js';
@@ -184,8 +185,12 @@ async function main() {
     inventory.add('wooden_axe', 1);
     inventory.add('wooden_shovel', 1);
     inventory.add('apple', 3);
+    inventory.add('dirt', 16);
     inventory.select(0);
   }
+  const heldItem = new HeldItem(camera, textureAtlas, inventory);
+  scene.add(camera);
+
   const furnaces = new FurnaceManager();
   if (restoring && saved.furnaces) furnaces.restore(saved.furnaces);
 
@@ -194,6 +199,8 @@ async function main() {
   const interaction = new BlockInteraction(player, world, renderer.domElement, {
     highlight,
     breakOverlay,
+    heldItem,
+    onMessage: (text) => hud?.showToast(text),
     inventory,
     survival,
     mobs,
@@ -288,13 +295,15 @@ async function main() {
   setProgress(60, 'Starting renderer…');
   window.voxelcraft = {
     scene, camera, renderer, world, terrain, seed, sky, player, physics, controller,
-    interaction, highlight, breakOverlay, inventory, hud, inventoryScreen, furnaces, furnaceScreen,
+    interaction, highlight, breakOverlay, heldItem, inventory, hud, inventoryScreen,
+    furnaces, furnaceScreen,
     survival, mobs, store, saveNow, autosave,
   };
 
   let revealed = false;
   let accumulator = 0;
   let lastTime = performance.now();
+  let lastFrame = lastTime;
 
   renderer.setAnimationLoop((time) => {
     const now = typeof time === 'number' ? time : performance.now();
@@ -315,6 +324,9 @@ async function main() {
       accumulator -= SIM_STEP;
     }
 
+    const frameDt = Math.min(0.1, (now - lastFrame) / 1000);
+    lastFrame = now;
+    heldItem.update(frameDt);
     cameraController.update(accumulator / SIM_STEP);
     hud.setVitals();
     renderer.render(scene, camera);
