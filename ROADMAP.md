@@ -226,19 +226,20 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 ## 6. Mobs & Entities
 
 ### 6.1 Entity framework
-- [ ] Base entity (position, velocity, AABB, gravity, collision)
-- [ ] Living entity (health, effects, equipment, drops)
-- [ ] Pathfinding (A* on voxel graph, jump/cost rules)
+- [x] Base entity (position, velocity, AABB, gravity, collision, step-up)
+- [~] Living entity: health, hurt flash, knockback, death (effects/equipment pending)
+- [ ] Pathfinding (A* on voxel graph, jump/cost rules) — straight-line chase for now
 - [ ] Goal system (float, look, target, melee, avoid, panic)
-- [ ] Spawning rules (light, biome, height, caps, despawn)
-- [ ] Entity rendering + animations (head, limbs, walk cycle)
+- [x] Spawning (night, surface checks, 16–40 blocks, cap 6, distance despawn)
+- [x] Entity rendering + animation (boxy model, arm/leg swing, hurt tint)
 - [ ] Item entities, XP orbs, projectiles
 
 ### 6.2 Passive
 - [ ] Cow, pig, sheep, chicken, rabbit, horse/donkey/mule, wolf, cat/ocelot, fox, panda, polar bear, turtle, axolotl, frog, bee, parrot, bat, squid/glow squid, dolphin, cod/salmon/tropical fish, goat, llama, camel, sniffer, armadillo, allay, snow golem, iron golem
 
 ### 6.3 Hostile
-- [ ] Zombie/husk/drowned, skeleton/stray/bogged, creeper, spider/cave spider, enderman, witch, slime/magma cube, phantom, pillager/vindicator/evoker/illusioner/ravager, vex, blaze, ghast, wither skeleton, piglin/piglin brute/zombified piglin, hoglin/zoglin, guardian/elder guardian, shulker, silverfish/endermite, warden, breeze, bogged
+- [~] Zombie (spawn, chase, melee, daylight burn, knockback, death); drops pending
+- [ ] Husk/drowned, skeleton/stray/bogged, creeper, spider/cave spider, enderman, witch, slime/magma cube, phantom, pillager/vindicator/evoker/illusioner/ravager, vex, blaze, ghast, wither skeleton, piglin/piglin brute/zombified piglin, hoglin/zoglin, guardian/elder guardian, shulker, silverfish/endermite, warden, breeze
 
 ### 6.4 Bosses
 - [ ] Ender dragon (crystals, phases, perch, egg)
@@ -368,7 +369,7 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 1. ~~3×3 crafting grid + drag/drop inventory~~ — done
 2. ~~Furnace + smelting + fuel~~ — done (XP pending)
 3. ~~Health, damage, death/respawn, hunger/air HUD~~ — done
-4. First hostile mob (zombie spawning + combat)
+4. ~~First hostile mob (zombie spawning + combat)~~ — done
 5. Ore generation + iron/diamond tiers + armor
 6. Caves/aquifers and flowing water
 7. Redstone core (dust, torch, repeater, piston)
