@@ -16,7 +16,8 @@ export function canHarvest(blockId, heldItemId = null) {
   if (BlockRegistry.canHarvestByHand(blockId)) return true;
   const tool = heldTool(heldItemId);
   const required = BlockRegistry.getTool(blockId);
-  return Boolean(tool && required && tool.tool === required);
+  if (!tool || !required || tool.tool !== required) return false;
+  return (tool.tier ?? 0) >= BlockRegistry.getRequiredTier(blockId);
 }
 
 // Bare-hand-equivalent time on the ground, in seconds.
@@ -25,7 +26,12 @@ export function breakTimeSeconds(blockId, heldItemId = null) {
   if (hardness <= 0) return 0;
   const tool = heldTool(heldItemId);
   const required = BlockRegistry.getTool(blockId);
-  const correct = Boolean(tool && required && tool.tool === required);
+  const correct = Boolean(
+    tool
+    && required
+    && tool.tool === required
+    && (tool.tier ?? 0) >= BlockRegistry.getRequiredTier(blockId),
+  );
   const speed = correct ? tool.speed : 1;
   const factor = canHarvest(blockId, heldItemId) ? 1.5 : 5;
   return (hardness * factor) / speed;

@@ -76,6 +76,54 @@ export const RECIPES = [
     key: { S: 'stone', T: 'stick' },
     output: { id: 'stone_sword', count: 1 },
   },
+  {
+    id: 'iron_pickaxe',
+    pattern: ['III', ' S ', ' S '],
+    key: { I: 'iron_ingot', S: 'stick' },
+    output: { id: 'iron_pickaxe', count: 1 },
+  },
+  {
+    id: 'iron_axe',
+    pattern: ['II', 'IS', ' S'],
+    key: { I: 'iron_ingot', S: 'stick' },
+    output: { id: 'iron_axe', count: 1 },
+  },
+  {
+    id: 'iron_shovel',
+    pattern: ['I', 'S', 'S'],
+    key: { I: 'iron_ingot', S: 'stick' },
+    output: { id: 'iron_shovel', count: 1 },
+  },
+  {
+    id: 'iron_sword',
+    pattern: ['I', 'I', 'S'],
+    key: { I: 'iron_ingot', S: 'stick' },
+    output: { id: 'iron_sword', count: 1 },
+  },
+  {
+    id: 'diamond_pickaxe',
+    pattern: ['DDD', ' S ', ' S '],
+    key: { D: 'diamond', S: 'stick' },
+    output: { id: 'diamond_pickaxe', count: 1 },
+  },
+  {
+    id: 'diamond_axe',
+    pattern: ['DD', 'DS', ' S'],
+    key: { D: 'diamond', S: 'stick' },
+    output: { id: 'diamond_axe', count: 1 },
+  },
+  {
+    id: 'diamond_shovel',
+    pattern: ['D', 'S', 'S'],
+    key: { D: 'diamond', S: 'stick' },
+    output: { id: 'diamond_shovel', count: 1 },
+  },
+  {
+    id: 'diamond_sword',
+    pattern: ['D', 'D', 'S'],
+    key: { D: 'diamond', S: 'stick' },
+    output: { id: 'diamond_sword', count: 1 },
+  },
 ];
 
 function trimRows(rows) {

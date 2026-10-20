@@ -6,7 +6,7 @@ A browser-based voxel sandbox game faithful to **Minecraft Java Edition 1.21.x**
 
 **Status: Phase 1 + survival slice.** The world renders and persists: Vite + Three.js, procedural 16×16 block and item textures with a greedy-meshed atlas, deterministic simplex terrain (plains, forest, desert with oak trees) streamed by circular render distance, a first-person player (WASD, jump, sneak, sprint, mouse look, gravity, AABB collision, swimming on a fixed 20 TPS tick), a 20-minute day/night cycle with sun, moon, stars and fog, and IndexedDB saves with autosave.
 
-The survival loop works: new worlds start with **wooden tools and apples**, breaking blocks **drops items into a 36-slot inventory**, and **crafting** runs on a 2×2 grid (E) or a placed table's 3×3 grid. A **furnace** smelts logs to charcoal and stone to smooth stone with real fuel values. **Health, hunger and air** track movement, falls, drowning and starvation, with hearts/hunger/bubbles on the HUD, a death screen and respawn. Placeable water, swimming and a creative **god mode** (G) round it out.
+The survival loop works: new worlds start with **wooden tools and apples**, breaking blocks **drops items into a 36-slot inventory**, and **crafting** runs on a 2×2 grid (E) or a placed table's 3×3 grid. A **furnace** smelts logs to charcoal, stone to smooth stone, and raw ores to ingots with real fuel values. The world generates coal/iron/gold/redstone/diamond **ore veins**; pickaxe tiers gate them (wood → coal, stone → iron, iron → gold/redstone/diamond), and you can craft **iron and diamond tools**. **Health, hunger and air** track movement, falls, drowning and starvation, with hearts/hunger/bubbles on the HUD, a death screen and respawn. Placeable water, swimming and a creative **god mode** (G) round it out.
 
 ## Roadmap
 
@@ -58,6 +58,7 @@ npm run generate-textures # regenerate public/assets/textures/blocks/*.png
 3. Craft a **wooden pickaxe** (3 planks + 2 sticks) — new worlds already include one — then mine stone for **stone tools**.
 4. Craft a **furnace** (8 stone at the table): logs smelt to charcoal (80 s of fuel each), stone to smooth stone.
 5. Watch your hearts, hunger and air: falls hurt (1 HP per block past 3), drowning and starvation kill, apples restore hunger, and the death screen respawns you at spawn.
+6. Dig for ores: coal (wood pickaxe) → iron (stone pickaxe) → gold/redstone/diamond (iron pickaxe). Smelt raw iron/gold into ingots and craft iron/diamond tools.
 
 Click a stack to pick it up, click again to place, right-click to split/place one, shift-click to move stacks. Stone drops stone (cobblestone is not in the block set yet), and iron/diamond tiers wait for ore generation.
 

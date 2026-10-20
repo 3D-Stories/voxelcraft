@@ -14,6 +14,14 @@ const TEMPERATURE_SCALE = 0.0022; // biome regions
 const DESERT_THRESHOLD = 0.25;
 const FOREST_THRESHOLD = -0.1;
 
+const ORE_VEINS = [
+  { block: BlockRegistry.COAL_ORE, veins: 6, size: 6, minY: 10, maxY: 120 },
+  { block: BlockRegistry.IRON_ORE, veins: 6, size: 4, minY: -20, maxY: 70 },
+  { block: BlockRegistry.GOLD_ORE, veins: 2, size: 4, minY: -64, maxY: 32 },
+  { block: BlockRegistry.REDSTONE_ORE, veins: 2, size: 4, minY: -64, maxY: 16 },
+  { block: BlockRegistry.DIAMOND_ORE, veins: 1, size: 3, minY: -64, maxY: -40 },
+];
+
 const MIN_SURFACE = CHUNK_MIN_Y + 4;
 const MAX_SURFACE = CHUNK_MIN_Y + CHUNK_HEIGHT - 5;
 
@@ -77,8 +85,36 @@ export class TerrainGenerator {
       }
     }
 
+    this._placeOres(chunk);
     this._plantTrees(chunk);
     return chunk;
+  }
+
+  _placeOres(chunk) {
+    const random = mulberry32((chunkSeed(this.seed, chunk.cx, chunk.cz) ^ 0x9e3779b9) >>> 0);
+    const baseX = chunk.cx * CHUNK_SIZE;
+    const baseZ = chunk.cz * CHUNK_SIZE;
+
+    for (const vein of ORE_VEINS) {
+      for (let v = 0; v < vein.veins; v++) {
+        let x = Math.floor(random() * CHUNK_SIZE);
+        let z = Math.floor(random() * CHUNK_SIZE);
+        let y = vein.minY + Math.floor(random() * (vein.maxY - vein.minY + 1));
+        for (let n = 0; n < vein.size; n++) {
+          if (
+            x >= 0 && x < CHUNK_SIZE && z >= 0 && z < CHUNK_SIZE
+            && y > CHUNK_MIN_Y && y < CHUNK_MIN_Y + CHUNK_HEIGHT - 2
+            && y < this.getHeight(baseX + x, baseZ + z) - 3
+            && chunk.getBlock(x, y, z).id === BlockRegistry.STONE
+          ) {
+            chunk.setBlock(x, y, z, vein.block);
+          }
+          x += Math.floor(random() * 3) - 1;
+          y += Math.floor(random() * 3) - 1;
+          z += Math.floor(random() * 3) - 1;
+        }
+      }
+    }
   }
 
   // Deterministic tree candidates per chunk. Canopies are kept at least two

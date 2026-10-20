@@ -30,7 +30,7 @@ The survival loop starts to work: drops, inventory, two tool tiers, recipe-list 
 - [ ] All ~60 Overworld biomes from `docs/04`
 - [ ] Caves, ravines, aquifers, underground water/lava lakes
 - [ ] Deepslate below Y=0, bedrock floor at Y −64
-- [ ] Ore veins (coal, copper, iron, gold, redstone, lapis, diamond, emerald, ancient debris)
+- [~] Ore veins: coal/iron/gold/redstone/diamond generated; copper/lapis/emerald/ancient debris pending
 - [ ] Geodes, fossils, clay, gravel, moss, dripstone, lush caves
 - [ ] Rivers and oceans (water bodies at sea level, biome beaches)
 - [ ] Snow/ice biomes, snow layers, powder snow
@@ -161,8 +161,8 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 ### 4.5 Inventory & items
 - [x] 36-slot inventory, 9-slot hotbar, stack counts, selection
 - [x] Drops from blocks, item consumption on place
-- [~] Tools: wood/stone pickaxe/axe/shovel/sword, durability
-- [ ] Full item registry (~1000 items), item tags
+- [x] Tools: wood/stone/iron/diamond pickaxe/axe/shovel/sword with tiers, durability, attack damage
+- [~] Item registry (~40 items), tags
 - [x] 2×2 crafting grid in inventory; 3×3 at a crafting table
 - [x] Drag/drop, stack splitting, shift-click between hotbar/storage
 - [ ] Number-key swap, drop key (Q), drag-to-distribute
@@ -370,12 +370,13 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 2. ~~Furnace + smelting + fuel~~ — done (XP pending)
 3. ~~Health, damage, death/respawn, hunger/air HUD~~ — done
 4. ~~First hostile mob (zombie spawning + combat)~~ — done
-5. Ore generation + iron/diamond tiers + armor
-6. Caves/aquifers and flowing water
-7. Redstone core (dust, torch, repeater, piston)
-8. Nether dimension + portals
-9. Audio system (block/mob/ambient, CC0 assets)
-10. Menus/options/localization
+5. ~~Ore generation + iron/diamond tiers~~ — done (armor next)
+6. Armor slots + damage reduction + armor recipes
+7. Caves/aquifers and flowing water
+8. Redstone core (dust, torch, repeater, piston)
+9. Nether dimension + portals
+10. Audio system (block/mob/ambient, CC0 assets)
+11. Menus/options/localization
 
 ---
 

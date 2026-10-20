@@ -10,6 +10,8 @@ export const SMELT_TICKS = 200;
 export const SMELTING = [
   { input: 'oak_log', output: 'charcoal', count: 1 },
   { input: 'stone', output: 'smooth_stone', count: 1 },
+  { input: 'raw_iron', output: 'iron_ingot', count: 1 },
+  { input: 'raw_gold', output: 'gold_ingot', count: 1 },
 ];
 
 export const FUELS = {

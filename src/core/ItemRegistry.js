@@ -17,33 +17,69 @@ export const ITEMS = {
   furnace: { name: 'Furnace', kind: 'block', blockId: 10, icon: 'blocks/furnace_side.png' },
   smooth_stone: { name: 'Smooth Stone', kind: 'block', blockId: 11, icon: 'blocks/smooth_stone.png' },
   charcoal: { name: 'Charcoal', kind: 'item', icon: 'items/charcoal.png' },
+  coal_ore: { name: 'Coal Ore', kind: 'block', blockId: 12, icon: 'blocks/coal_ore.png' },
+  iron_ore: { name: 'Iron Ore', kind: 'block', blockId: 13, icon: 'blocks/iron_ore.png' },
+  gold_ore: { name: 'Gold Ore', kind: 'block', blockId: 14, icon: 'blocks/gold_ore.png' },
+  redstone_ore: { name: 'Redstone Ore', kind: 'block', blockId: 15, icon: 'blocks/redstone_ore.png' },
+  diamond_ore: { name: 'Diamond Ore', kind: 'block', blockId: 16, icon: 'blocks/diamond_ore.png' },
+  coal: { name: 'Coal', kind: 'item', icon: 'items/coal.png' },
+  raw_iron: { name: 'Raw Iron', kind: 'item', icon: 'items/raw_iron.png' },
+  iron_ingot: { name: 'Iron Ingot', kind: 'item', icon: 'items/iron_ingot.png' },
+  raw_gold: { name: 'Raw Gold', kind: 'item', icon: 'items/raw_gold.png' },
+  gold_ingot: { name: 'Gold Ingot', kind: 'item', icon: 'items/gold_ingot.png' },
+  diamond: { name: 'Diamond', kind: 'item', icon: 'items/diamond.png' },
+  redstone: { name: 'Redstone Dust', kind: 'item', icon: 'items/redstone.png' },
   apple: {
     name: 'Apple', kind: 'food', food: { hunger: 4, saturation: 2.4 }, icon: 'items/apple.png',
   },
   stick: { name: 'Stick', kind: 'item', icon: 'items/stick.png' },
   wooden_pickaxe: {
-    name: 'Wooden Pickaxe', kind: 'tool', tool: 'pickaxe', speed: 2, durability: 59, icon: 'items/wooden_pickaxe.png',
+    name: 'Wooden Pickaxe', kind: 'tool', tool: 'pickaxe', tier: 1, speed: 2, durability: 59, attack: 2, icon: 'items/wooden_pickaxe.png',
   },
   stone_pickaxe: {
-    name: 'Stone Pickaxe', kind: 'tool', tool: 'pickaxe', speed: 4, durability: 131, icon: 'items/stone_pickaxe.png',
+    name: 'Stone Pickaxe', kind: 'tool', tool: 'pickaxe', tier: 2, speed: 4, durability: 131, attack: 3, icon: 'items/stone_pickaxe.png',
   },
   wooden_axe: {
-    name: 'Wooden Axe', kind: 'tool', tool: 'axe', speed: 2, durability: 59, icon: 'items/wooden_axe.png',
+    name: 'Wooden Axe', kind: 'tool', tool: 'axe', tier: 1, speed: 2, durability: 59, attack: 7, icon: 'items/wooden_axe.png',
   },
   stone_axe: {
-    name: 'Stone Axe', kind: 'tool', tool: 'axe', speed: 4, durability: 131, icon: 'items/stone_axe.png',
+    name: 'Stone Axe', kind: 'tool', tool: 'axe', tier: 2, speed: 4, durability: 131, attack: 9, icon: 'items/stone_axe.png',
   },
   wooden_shovel: {
-    name: 'Wooden Shovel', kind: 'tool', tool: 'shovel', speed: 2, durability: 59, icon: 'items/wooden_shovel.png',
+    name: 'Wooden Shovel', kind: 'tool', tool: 'shovel', tier: 1, speed: 2, durability: 59, attack: 2.5, icon: 'items/wooden_shovel.png',
   },
   stone_shovel: {
-    name: 'Stone Shovel', kind: 'tool', tool: 'shovel', speed: 4, durability: 131, icon: 'items/stone_shovel.png',
+    name: 'Stone Shovel', kind: 'tool', tool: 'shovel', tier: 2, speed: 4, durability: 131, attack: 3.5, icon: 'items/stone_shovel.png',
   },
   wooden_sword: {
-    name: 'Wooden Sword', kind: 'tool', tool: 'sword', speed: 1, durability: 59, icon: 'items/wooden_sword.png',
+    name: 'Wooden Sword', kind: 'tool', tool: 'sword', tier: 1, speed: 1, durability: 59, attack: 4, icon: 'items/wooden_sword.png',
   },
   stone_sword: {
-    name: 'Stone Sword', kind: 'tool', tool: 'sword', speed: 1, durability: 131, icon: 'items/stone_sword.png',
+    name: 'Stone Sword', kind: 'tool', tool: 'sword', tier: 2, speed: 1, durability: 131, attack: 5, icon: 'items/stone_sword.png',
+  },
+  iron_pickaxe: {
+    name: 'Iron Pickaxe', kind: 'tool', tool: 'pickaxe', tier: 3, speed: 6, durability: 250, attack: 4, icon: 'items/iron_pickaxe.png',
+  },
+  iron_axe: {
+    name: 'Iron Axe', kind: 'tool', tool: 'axe', tier: 3, speed: 6, durability: 250, attack: 9, icon: 'items/iron_axe.png',
+  },
+  iron_shovel: {
+    name: 'Iron Shovel', kind: 'tool', tool: 'shovel', tier: 3, speed: 6, durability: 250, attack: 4.5, icon: 'items/iron_shovel.png',
+  },
+  iron_sword: {
+    name: 'Iron Sword', kind: 'tool', tool: 'sword', tier: 3, speed: 1, durability: 250, attack: 6, icon: 'items/iron_sword.png',
+  },
+  diamond_pickaxe: {
+    name: 'Diamond Pickaxe', kind: 'tool', tool: 'pickaxe', tier: 4, speed: 8, durability: 1561, attack: 5, icon: 'items/diamond_pickaxe.png',
+  },
+  diamond_axe: {
+    name: 'Diamond Axe', kind: 'tool', tool: 'axe', tier: 4, speed: 8, durability: 1561, attack: 9, icon: 'items/diamond_axe.png',
+  },
+  diamond_shovel: {
+    name: 'Diamond Shovel', kind: 'tool', tool: 'shovel', tier: 4, speed: 8, durability: 1561, attack: 5.5, icon: 'items/diamond_shovel.png',
+  },
+  diamond_sword: {
+    name: 'Diamond Sword', kind: 'tool', tool: 'sword', tier: 4, speed: 1, durability: 1561, attack: 7, icon: 'items/diamond_sword.png',
   },
 };
 
@@ -59,6 +95,11 @@ const BLOCK_DROPS = {
   9: 'crafting_table',
   10: 'furnace',
   11: 'smooth_stone',
+  12: 'coal',
+  13: 'raw_iron',
+  14: 'raw_gold',
+  15: 'redstone',
+  16: 'diamond',
 };
 
 export function getItem(id) {

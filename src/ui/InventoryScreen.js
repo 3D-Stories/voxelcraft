@@ -18,6 +18,11 @@ const CREATIVE_BLOCKS = [
   BlockRegistry.CRAFTING_TABLE,
   BlockRegistry.FURNACE,
   BlockRegistry.SMOOTH_STONE,
+  BlockRegistry.COAL_ORE,
+  BlockRegistry.IRON_ORE,
+  BlockRegistry.GOLD_ORE,
+  BlockRegistry.REDSTONE_ORE,
+  BlockRegistry.DIAMOND_ORE,
   BlockRegistry.WATER,
 ];
 

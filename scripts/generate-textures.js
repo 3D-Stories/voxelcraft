@@ -78,7 +78,17 @@ const COLORS = {
   heartEmpty: hexToRgb('#3a2a2a'),
   hunger: hexToRgb('#b5651d'),
   hungerEmpty: hexToRgb('#3a2a2a'),
-  bubble: hexToRgb('#64b5f6')
+  bubble: hexToRgb('#64b5f6'),
+  coalOre: hexToRgb('#2b2b2b'),
+  ironOre: hexToRgb('#d8af93'),
+  ironMetal: hexToRgb('#d8d8d8'),
+  ironDark: hexToRgb('#8a8a8a'),
+  goldOre: hexToRgb('#f5d442'),
+  goldMetal: hexToRgb('#ffd700'),
+  goldDark: hexToRgb('#b8860b'),
+  redstone: hexToRgb('#d32f2f'),
+  diamond: hexToRgb('#4dd0e1'),
+  diamondDark: hexToRgb('#00838f')
 };
 
 function renderGrassTop(ctx, noise, rng) {
@@ -269,6 +279,24 @@ function renderFurnaceSide(ctx, noise, rng) {
   for (let x = 5; x <= 10; x++) drawPixel(ctx, x, 9, hexToRgb('#1a1a1a'));
 }
 
+function oreTexture(ctx, noise, rng, color, radius = 1.4) {
+  renderStone(ctx, noise, rng);
+  for (let i = 0; i < 7; i++) {
+    const cx = 2 + rng() * 12;
+    const cy = 2 + rng() * 12;
+    for (let y = -2; y <= 2; y++) {
+      for (let x = -2; x <= 2; x++) {
+        if (x * x + y * y > radius * radius) continue;
+        drawPixel(ctx, Math.round(cx + x), Math.round(cy + y), shade(color, (rng() - 0.5) * 20));
+      }
+    }
+  }
+}
+
+function renderOre(name, color) {
+  return (ctx, noise, rng) => oreTexture(ctx, noise, rng, color);
+}
+
 function renderSmoothStone(ctx, noise, rng) {
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
@@ -357,6 +385,48 @@ function bubbleIcon(ctx) {
   });
 }
 
+function ingotIcon(ctx, color, dark) {
+  for (let y = 6; y <= 10; y++) {
+    for (let x = 3; x <= 12; x++) {
+      if (y === 6 && (x === 3 || x === 12)) continue;
+      px(ctx, x, y, (x < 6 || y < 8) ? color : dark);
+    }
+  }
+  px(ctx, 4, 5, color);
+  px(ctx, 11, 5, color);
+  px(ctx, 5, 11, dark);
+  px(ctx, 6, 11, dark);
+}
+
+function gemIcon(ctx, color, dark) {
+  const rows = ['..#####..', '.#######.', '#########', '.#######.', '..#####..', '...###...', '....#....'];
+  rows.forEach((row, y) => {
+    [...row].forEach((cell, x) => {
+      if (cell === '.') return;
+      px(ctx, 4 + x, 3 + y, (x + y) % 5 === 0 ? dark : color);
+    });
+  });
+}
+
+function lumpIcon(ctx, color, dark) {
+  for (let y = 4; y <= 12; y++) {
+    for (let x = 3; x <= 12; x++) {
+      const dx = (x - 7.5) / 4.5;
+      const dy = (y - 8) / 4.5;
+      if (dx * dx + dy * dy > 1) continue;
+      px(ctx, x, y, (x + y) % 4 === 0 ? dark : color);
+    }
+  }
+}
+
+function dustIcon(ctx, color) {
+  for (let i = 0; i < 40; i++) {
+    const x = 2 + Math.floor((i * 37) % 12);
+    const y = 2 + Math.floor((i * 53) % 12);
+    px(ctx, x, y, color);
+  }
+}
+
 function appleIcon(ctx) {
   for (let y = 3; y <= 12; y++) {
     for (let x = 3; x <= 12; x++) {
@@ -405,44 +475,111 @@ function handle(ctx) {
   line(ctx, 11, 13, 7, 8, COLORS.handleDark, 1);
 }
 
+const TOOL_MASKS = {
+  pickaxe: [
+    '................',
+    '.....#######....',
+    '...##mmmmmmm##..',
+    '..#mmmmmmmmmmm#.',
+    '.#mm#######mmmm#',
+    '.#m#........#mm#',
+    '..#..........##.',
+    '......###.......',
+    '.....##h##......',
+    '....##hh#.......',
+    '...##hh#........',
+    '..##hh#.........',
+    '.##hh#..........',
+    '##hh#...........',
+    '###.............',
+    '................'
+  ],
+  axe: [
+    '................',
+    '..######........',
+    '.#llllll##......',
+    '#lmmmmmmmm#.....',
+    '#lmmmmmmmmm#....',
+    '.#mmmmmmmmm#....',
+    '..#mmmmmmm#.....',
+    '...#mmmmm#......',
+    '....#mmm#.......',
+    '.....#hh#.......',
+    '.....#hh#.......',
+    '......#hh#......',
+    '......#hh#......',
+    '.......#hh#.....',
+    '.......#hh#.....',
+    '........##......'
+  ],
+  shovel: [
+    '................',
+    '.........####...',
+    '........#llll#..',
+    '.......#lmmmmm#.',
+    '.......#lmmmmm#.',
+    '.......#lmmmmm#.',
+    '........#mmmm#..',
+    '.........#mm#...',
+    '........##h#....',
+    '.......##hh#....',
+    '......##hh#.....',
+    '.....##hh#......',
+    '....##hh#.......',
+    '...##hh#........',
+    '..##hh#.........',
+    '..###...........'
+  ],
+  sword: [
+    '................',
+    '............###.',
+    '...........#ll#.',
+    '..........#llm#.',
+    '.........#llm#..',
+    '........#llm#...',
+    '.......#llm#....',
+    '......#llm#.....',
+    '.....#llm#......',
+    '....#llm#.......',
+    '...#llm#........',
+    '..#llm#.........',
+    '.######.........',
+    '.#hh##..........',
+    '.#hh#...........',
+    '..##............'
+  ]
+};
+
 function toolIcon(ctx, type, headColor, edgeColor) {
-  handle(ctx);
-  if (type === 'pickaxe') {
-    line(ctx, 3, 6, 7, 3, headColor, 2);
-    line(ctx, 7, 3, 12, 5, headColor, 2);
-    line(ctx, 3, 6, 11, 5, edgeColor, 1);
-    px(ctx, 2, 7, edgeColor);
-    px(ctx, 12, 5, edgeColor);
-  } else if (type === 'axe') {
-    for (let y = 3; y <= 7; y++) {
-      for (let x = 3; x <= 8; x++) {
-        if ((x === 3 && y > 4) || (y === 7 && x < 5)) continue;
-        px(ctx, x, y, headColor);
-      }
-    }
-    line(ctx, 3, 4, 7, 3, edgeColor, 1);
-    line(ctx, 8, 4, 8, 7, edgeColor, 1);
-  } else if (type === 'shovel') {
-    for (let y = 2; y <= 5; y++) {
-      for (let x = 9; x <= 13; x++) {
-        if ((x === 9 || x === 13) && (y === 2 || y === 5)) continue;
-        px(ctx, x, y, headColor);
-      }
-    }
-    line(ctx, 10, 2, 13, 2, edgeColor, 1);
-    line(ctx, 13, 2, 13, 5, edgeColor, 1);
-  } else if (type === 'sword') {
-    line(ctx, 4, 13, 12, 3, COLORS.blade, 2);
-    line(ctx, 4, 13, 11, 3, edgeColor, 1);
-    line(ctx, 3, 12, 7, 14, COLORS.handle, 2);
-    line(ctx, 2, 11, 6, 13, COLORS.handleDark, 1);
-    line(ctx, 12, 2, 13, 3, COLORS.blade, 1);
-  }
+  const mask = TOOL_MASKS[type];
+  if (!mask) return;
+  const light = [
+    Math.min(255, headColor[0] + 40),
+    Math.min(255, headColor[1] + 40),
+    Math.min(255, headColor[2] + 40)
+  ];
+  const outline = type === 'sword'
+    ? hexToRgb('#2b2b2b')
+    : hexToRgb('#3a2a1a');
+  const colors = {
+    '#': outline,
+    m: headColor,
+    l: light,
+    h: COLORS.handle,
+    g: COLORS.handleDark
+  };
+  mask.forEach((row, y) => {
+    [...row].forEach((cell, x) => {
+      if (cell === '.') return;
+      px(ctx, x, y, colors[cell] ?? headColor);
+    });
+  });
 }
 
 function stickIcon(ctx) {
-  line(ctx, 5, 13, 10, 4, COLORS.handle, 2);
-  line(ctx, 6, 13, 11, 4, COLORS.handleDark, 1);
+  line(ctx, 4, 14, 11, 3, COLORS.handleDark, 3);
+  line(ctx, 5, 13, 11, 4, COLORS.handle, 2);
+  line(ctx, 6, 12, 10, 5, hexToRgb('#b08a55'), 1);
 }
 
 const TEXTURES = [
@@ -460,7 +597,12 @@ const TEXTURES = [
   { name: 'crafting_table_side', render: renderCraftingTableSide },
   { name: 'furnace_top', render: renderFurnaceTop },
   { name: 'furnace_side', render: renderFurnaceSide },
-  { name: 'smooth_stone', render: renderSmoothStone }
+  { name: 'smooth_stone', render: renderSmoothStone },
+  { name: 'coal_ore', render: renderOre('coal_ore', COLORS.coalOre) },
+  { name: 'iron_ore', render: renderOre('iron_ore', COLORS.ironOre) },
+  { name: 'gold_ore', render: renderOre('gold_ore', COLORS.goldOre, 1.2) },
+  { name: 'redstone_ore', render: renderOre('redstone_ore', COLORS.redstone, 1.2) },
+  { name: 'diamond_ore', render: renderOre('diamond_ore', COLORS.diamond, 1.2) }
 ];
 
 const ITEM_TEXTURES = [
@@ -474,7 +616,22 @@ const ITEM_TEXTURES = [
   { name: 'wooden_shovel', render: (ctx) => toolIcon(ctx, 'shovel', COLORS.woodHead, COLORS.handleDark) },
   { name: 'stone_shovel', render: (ctx) => toolIcon(ctx, 'shovel', COLORS.stoneHead, COLORS.stoneDark) },
   { name: 'wooden_sword', render: (ctx) => toolIcon(ctx, 'sword', COLORS.woodHead, COLORS.handleDark) },
-  { name: 'stone_sword', render: (ctx) => toolIcon(ctx, 'sword', COLORS.stoneHead, COLORS.stoneDark) }
+  { name: 'stone_sword', render: (ctx) => toolIcon(ctx, 'sword', COLORS.stoneHead, COLORS.stoneDark) },
+  { name: 'iron_pickaxe', render: (ctx) => toolIcon(ctx, 'pickaxe', COLORS.ironMetal, COLORS.ironDark) },
+  { name: 'iron_axe', render: (ctx) => toolIcon(ctx, 'axe', COLORS.ironMetal, COLORS.ironDark) },
+  { name: 'iron_shovel', render: (ctx) => toolIcon(ctx, 'shovel', COLORS.ironMetal, COLORS.ironDark) },
+  { name: 'iron_sword', render: (ctx) => toolIcon(ctx, 'sword', COLORS.ironMetal, COLORS.ironDark) },
+  { name: 'diamond_pickaxe', render: (ctx) => toolIcon(ctx, 'pickaxe', COLORS.diamond, COLORS.diamondDark) },
+  { name: 'diamond_axe', render: (ctx) => toolIcon(ctx, 'axe', COLORS.diamond, COLORS.diamondDark) },
+  { name: 'diamond_shovel', render: (ctx) => toolIcon(ctx, 'shovel', COLORS.diamond, COLORS.diamondDark) },
+  { name: 'diamond_sword', render: (ctx) => toolIcon(ctx, 'sword', COLORS.diamond, COLORS.diamondDark) },
+  { name: 'coal', render: (ctx) => lumpIcon(ctx, COLORS.coalOre, hexToRgb('#111111')) },
+  { name: 'raw_iron', render: (ctx) => lumpIcon(ctx, COLORS.ironOre, COLORS.ironDark) },
+  { name: 'iron_ingot', render: (ctx) => ingotIcon(ctx, COLORS.ironMetal, COLORS.ironDark) },
+  { name: 'raw_gold', render: (ctx) => lumpIcon(ctx, COLORS.goldOre, COLORS.goldDark) },
+  { name: 'gold_ingot', render: (ctx) => ingotIcon(ctx, COLORS.goldMetal, COLORS.goldDark) },
+  { name: 'diamond', render: (ctx) => gemIcon(ctx, COLORS.diamond, COLORS.diamondDark) },
+  { name: 'redstone', render: (ctx) => dustIcon(ctx, COLORS.redstone) }
 ];
 
 const UI_TEXTURES = [

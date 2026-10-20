@@ -9,6 +9,7 @@ import { PlayerController } from './player/PlayerController.js';
 import { CameraController } from './player/CameraController.js';
 import { BlockInteraction } from './player/BlockInteraction.js';
 import { BlockHighlight } from './render/BlockHighlight.js';
+import { BreakOverlay } from './render/BreakOverlay.js';
 import { Sky } from './render/Sky.js';
 import { detectWebGL } from './render/WebGLSupport.js';
 import { Inventory } from './core/Inventory.js';
@@ -170,6 +171,7 @@ async function main() {
   const controller = new PlayerController(player, renderer.domElement);
   const cameraController = new CameraController(camera, player);
   const highlight = new BlockHighlight(scene);
+  const breakOverlay = new BreakOverlay(scene);
 
   const inventory = new Inventory(
     restoring ? saved.inventory?.slots ?? [] : [],
@@ -191,6 +193,7 @@ async function main() {
   let inventoryScreen = null;
   const interaction = new BlockInteraction(player, world, renderer.domElement, {
     highlight,
+    breakOverlay,
     inventory,
     survival,
     mobs,
@@ -285,7 +288,7 @@ async function main() {
   setProgress(60, 'Starting renderer…');
   window.voxelcraft = {
     scene, camera, renderer, world, terrain, seed, sky, player, physics, controller,
-    interaction, highlight, inventory, hud, inventoryScreen, furnaces, furnaceScreen,
+    interaction, highlight, breakOverlay, inventory, hud, inventoryScreen, furnaces, furnaceScreen,
     survival, mobs, store, saveNow, autosave,
   };
 

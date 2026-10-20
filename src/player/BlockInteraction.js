@@ -20,6 +20,7 @@ export class BlockInteraction {
     this.survival = options.survival ?? null;
     this.mobs = options.mobs ?? null;
     this.highlight = options.highlight ?? null;
+    this.breakOverlay = options.breakOverlay ?? null;
     this.onBreak = options.onBreak ?? null;
     this.onUseBlock = options.onUseBlock ?? null;
 
@@ -60,6 +61,7 @@ export class BlockInteraction {
 
     // Creative/god mode breaks the targeted block instantly, without drops.
     if (this.player.godMode) {
+      this.breakOverlay?.update(null);
       if (this._mining && target) {
         this._breakBlock(target, { instant: true });
         this._targetKey = null;
@@ -70,6 +72,7 @@ export class BlockInteraction {
     if (!this._mining || !target) {
       this._ticksMined = 0;
       this._targetKey = null;
+      this.breakOverlay?.update(null);
       return;
     }
 
@@ -85,8 +88,11 @@ export class BlockInteraction {
     if (requiredTicks <= 0) return; // unbreakable (e.g. liquid)
 
     this._ticksMined += dt / 0.05;
+    const progress = Math.min(1, this._ticksMined / requiredTicks);
+    this.breakOverlay?.update(target, progress);
     if (this._ticksMined < requiredTicks) return;
 
+    this.breakOverlay?.update(null);
     this._breakBlock(target);
     this._ticksMined = 0;
     this._targetKey = null;
@@ -117,6 +123,7 @@ export class BlockInteraction {
   }
 
   stopMining() {
+    this.breakOverlay?.update(null);
     this._mining = false;
     this._ticksMined = 0;
     this._targetKey = null;
