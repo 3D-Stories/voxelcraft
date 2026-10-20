@@ -17,6 +17,7 @@ export class BlockInteraction {
     this.world = world;
     this.domElement = domElement;
     this.inventory = options.inventory ?? null;
+    this.survival = options.survival ?? null;
     this.highlight = options.highlight ?? null;
     this.onBreak = options.onBreak ?? null;
     this.onUseBlock = options.onUseBlock ?? null;
@@ -97,7 +98,12 @@ export class BlockInteraction {
       if (canHarvest(target.id, heldId)) {
         const drop = dropForBlock(target.id);
         if (drop) this.inventory?.add(drop, 1);
+        // Oak leaves occasionally drop an apple (vanilla 0.5%).
+        if (target.id === BlockRegistry.OAK_LEAVES && Math.random() < 0.005) {
+          this.inventory?.add('apple', 1);
+        }
       }
+      this.survival?.addExhaustion(0.025);
       const held = heldId ? getItem(heldId) : null;
       if (held?.kind === 'tool' && this.inventory) {
         this.inventory.damageFromSlot(this.inventory.selectedIndex, 1);
@@ -129,6 +135,14 @@ export class BlockInteraction {
       this._ticksMined = 0;
       this._targetKey = null;
     } else if (event.button === 2) {
+      const selectedId = this.inventory?.selectedId ?? null;
+      const held = selectedId ? getItem(selectedId) : null;
+      if (held?.kind === 'food' && this.survival && this.inventory) {
+        if (this.survival.eat(selectedId)) {
+          this.inventory.removeFromSlot(this.inventory.selectedIndex, 1);
+        }
+        return;
+      }
       if (!this.player.sneaking) {
         const target = this.getTarget();
         const usable = target

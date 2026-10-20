@@ -31,12 +31,64 @@
 #crosshair::after { left: 0; top: 8px; width: 18px; height: 2px; }
 
 #hint {
-  position: fixed; left: 50%; bottom: 92px;
+  position: fixed; left: 50%; bottom: 136px;
   transform: translateX(-50%);
   padding: 8px 14px; border-radius: 6px;
   background: rgba(0, 0, 0, 0.45); color: #fff;
   font: 13px 'Courier New', monospace;
   pointer-events: none; white-space: nowrap;
+}
+
+#vitals {
+  position: fixed; left: 50%; bottom: 78px;
+  transform: translateX(-50%);
+  width: 452px;
+  display: flex; flex-direction: column; gap: 4px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+#air-row, #hearts, #hunger { display: flex; gap: 2px; }
+#air-row[hidden] { display: none; }
+#stat-row { display: flex; justify-content: space-between; }
+#vitals img { width: 18px; height: 18px; image-rendering: pixelated; }
+
+#damage-flash {
+  position: fixed; inset: 0;
+  background: radial-gradient(circle, rgba(255, 0, 0, 0) 45%, rgba(180, 0, 0, 0.6) 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s linear;
+  z-index: 5;
+}
+
+#death-screen {
+  position: fixed; inset: 0;
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px;
+  background: rgba(70, 0, 0, 0.65);
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  z-index: 30;
+}
+
+#death-screen.open { display: flex; }
+
+#death-screen h1 {
+  margin: 0;
+  font-size: 40px;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 0 #000;
+}
+
+#respawn-button {
+  padding: 10px 26px;
+  background: #4caf50;
+  color: #fff;
+  border: 0; border-radius: 4px;
+  font: 16px 'Courier New', monospace;
+  cursor: pointer;
 }
 
 #hotbar {

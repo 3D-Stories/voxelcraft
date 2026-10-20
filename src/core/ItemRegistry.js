@@ -17,6 +17,9 @@ export const ITEMS = {
   furnace: { name: 'Furnace', kind: 'block', blockId: 10, icon: 'blocks/furnace_side.png' },
   smooth_stone: { name: 'Smooth Stone', kind: 'block', blockId: 11, icon: 'blocks/smooth_stone.png' },
   charcoal: { name: 'Charcoal', kind: 'item', icon: 'items/charcoal.png' },
+  apple: {
+    name: 'Apple', kind: 'food', food: { hunger: 4, saturation: 2.4 }, icon: 'items/apple.png',
+  },
   stick: { name: 'Stick', kind: 'item', icon: 'items/stick.png' },
   wooden_pickaxe: {
     name: 'Wooden Pickaxe', kind: 'tool', tool: 'pickaxe', speed: 2, durability: 59, icon: 'items/wooden_pickaxe.png',

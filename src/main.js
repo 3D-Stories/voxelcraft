@@ -13,6 +13,7 @@ import { Sky } from './render/Sky.js';
 import { detectWebGL } from './render/WebGLSupport.js';
 import { Inventory } from './core/Inventory.js';
 import { FurnaceManager } from './core/Furnace.js';
+import { Survival } from './player/Survival.js';
 import { HUD } from './ui/HUD.js';
 import { InventoryScreen } from './ui/InventoryScreen.js';
 import { FurnaceScreen } from './ui/FurnaceScreen.js';
@@ -139,6 +140,15 @@ async function main() {
   }
 
   const physics = new PlayerPhysics(player, world);
+  const survival = new Survival(player, {
+    world,
+    spawn: { x: SPAWN_X + 0.5, y: spawnY, z: SPAWN_Z + 0.5 },
+    onDeath: () => {
+      controller.enabled = false;
+      if (document.pointerLockElement) document.exitPointerLock();
+    },
+  });
+  if (restoring && saved.survival) survival.restore(saved.survival);
 
   const urlTime = readStartTime();
   const savedTime = restoring && Number.isFinite(saved.skyTime) ? saved.skyTime : null;
@@ -163,6 +173,7 @@ async function main() {
     inventory.add('wooden_pickaxe', 1);
     inventory.add('wooden_axe', 1);
     inventory.add('wooden_shovel', 1);
+    inventory.add('apple', 3);
     inventory.select(0);
   }
   const furnaces = new FurnaceManager();
@@ -173,6 +184,7 @@ async function main() {
   const interaction = new BlockInteraction(player, world, renderer.domElement, {
     highlight,
     inventory,
+    survival,
     onUseBlock: (target) => {
       if (target.id === BlockRegistry.FURNACE) {
         furnaceScreen?.openAt(target);
@@ -187,7 +199,14 @@ async function main() {
     },
   });
 
-  const hud = new HUD(inventory, appEl);
+  const hud = new HUD(inventory, appEl, {
+    survival,
+    onRespawn: () => {
+      survival.respawn();
+      controller.enabled = true;
+      renderer.domElement.requestPointerLock?.();
+    },
+  });
   inventoryScreen = new InventoryScreen(inventory, appEl, {
     player,
     isBlocked: () => uiState.furnaceOpen,
@@ -235,6 +254,7 @@ async function main() {
       },
       inventory: inventory.toJSON(),
       furnaces: furnaces.toJSON(),
+      survival: survival.toJSON(),
     });
   };
 
@@ -257,7 +277,7 @@ async function main() {
   window.voxelcraft = {
     scene, camera, renderer, world, terrain, seed, sky, player, physics, controller,
     interaction, highlight, inventory, hud, inventoryScreen, furnaces, furnaceScreen,
-    store, saveNow, autosave,
+    survival, store, saveNow, autosave,
   };
 
   let revealed = false;
@@ -275,6 +295,7 @@ async function main() {
       player.beginTick();
       controller.update();
       physics.update(SIM_STEP);
+      survival.update(SIM_STEP);
       interaction.update(SIM_STEP);
       furnaces.tick(1);
       sky.update(SIM_STEP, camera);
@@ -282,6 +303,7 @@ async function main() {
     }
 
     cameraController.update(accumulator / SIM_STEP);
+    hud.setVitals();
     renderer.render(scene, camera);
 
     if (!revealed) {

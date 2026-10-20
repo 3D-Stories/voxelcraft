@@ -6,7 +6,7 @@ A browser-based voxel sandbox game faithful to **Minecraft Java Edition 1.21.x**
 
 **Status: Phase 1 + survival slice.** The world renders and persists: Vite + Three.js, procedural 16×16 block and item textures with a greedy-meshed atlas, deterministic simplex terrain (plains, forest, desert with oak trees) streamed by circular render distance, a first-person player (WASD, jump, sneak, sprint, mouse look, gravity, AABB collision, swimming on a fixed 20 TPS tick), a 20-minute day/night cycle with sun, moon, stars and fog, and IndexedDB saves with autosave.
 
-The survival loop works: new worlds start with **wooden tools**, breaking blocks **drops items into a 36-slot inventory**, and **crafting** runs on a 2×2 grid (E) or a placed table's 3×3 grid. A **furnace** smelts logs to charcoal and stone to smooth stone with real fuel values and progress. Placeable water, swimming and a creative **god mode** (G) round it out.
+The survival loop works: new worlds start with **wooden tools and apples**, breaking blocks **drops items into a 36-slot inventory**, and **crafting** runs on a 2×2 grid (E) or a placed table's 3×3 grid. A **furnace** smelts logs to charcoal and stone to smooth stone with real fuel values. **Health, hunger and air** track movement, falls, drowning and starvation, with hearts/hunger/bubbles on the HUD, a death screen and respawn. Placeable water, swimming and a creative **god mode** (G) round it out.
 
 ## Roadmap
 
@@ -47,6 +47,7 @@ npm run generate-textures # regenerate public/assets/textures/blocks/*.png
 | Use block | Right-click a placed crafting table (3×3 grid) or furnace (smelting UI) |
 | Break block | Left mouse (hold; speed depends on the held tool and block hardness) |
 | Place block | Right mouse (consumes the selected block; free in god mode) |
+| Eat | Right-click while holding food (apples) |
 | God mode | G — instant mining, 5-block reach, invulnerable; double-tap Space to fly (Space up, Shift down) |
 | Swim | Space to rise, Shift to dive (water slows you down) |
 
@@ -56,6 +57,7 @@ npm run generate-textures # regenerate public/assets/textures/blocks/*.png
 2. Fill the 2×2 with planks to craft a **crafting table**; place it and right-click it for the **3×3 grid**.
 3. Craft a **wooden pickaxe** (3 planks + 2 sticks) — new worlds already include one — then mine stone for **stone tools**.
 4. Craft a **furnace** (8 stone at the table): logs smelt to charcoal (80 s of fuel each), stone to smooth stone.
+5. Watch your hearts, hunger and air: falls hurt (1 HP per block past 3), drowning and starvation kill, apples restore hunger, and the death screen respawns you at spawn.
 
 Click a stack to pick it up, click again to place, right-click to split/place one, shift-click to move stacks. Stone drops stone (cobblestone is not in the block set yet), and iron/diamond tiers wait for ore generation.
 

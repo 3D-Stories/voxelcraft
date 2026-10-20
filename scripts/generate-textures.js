@@ -10,6 +10,7 @@ const SIZE = 16;
 const SEED = 0x5eedc0de;
 const BLOCKS_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'assets', 'textures', 'blocks');
 const ITEMS_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'assets', 'textures', 'items');
+const UI_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'assets', 'textures', 'ui');
 
 function hexToRgb(hex) {
   const value = parseInt(hex.slice(1), 16);
@@ -69,7 +70,15 @@ const COLORS = {
   bladeDark: hexToRgb('#8a8a8a'),
   smoothStone: hexToRgb('#a8a8a8'),
   charcoal: hexToRgb('#2b2b2b'),
-  charcoalLight: hexToRgb('#4a4a4a')
+  charcoalLight: hexToRgb('#4a4a4a'),
+  apple: hexToRgb('#c62828'),
+  appleLight: hexToRgb('#ef5350'),
+  appleLeaf: hexToRgb('#4c8c2b'),
+  heart: hexToRgb('#e53935'),
+  heartEmpty: hexToRgb('#3a2a2a'),
+  hunger: hexToRgb('#b5651d'),
+  hungerEmpty: hexToRgb('#3a2a2a'),
+  bubble: hexToRgb('#64b5f6')
 };
 
 function renderGrassTop(ctx, noise, rng) {
@@ -285,6 +294,85 @@ function charcoalIcon(ctx) {
   }
 }
 
+function heartMask(ctx, mode) {
+  const rows = [
+    '.##...##.',
+    '#########',
+    '#########',
+    '#########',
+    '.#######.',
+    '..#####..',
+    '...###...',
+    '....#....'
+  ];
+  rows.forEach((row, y) => {
+    [...row].forEach((cell, x) => {
+      if (cell === '.') return;
+      let color = COLORS.heart;
+      if (mode === 'empty') color = COLORS.heartEmpty;
+      else if (mode === 'half' && x >= Math.ceil(row.length / 2)) color = COLORS.heartEmpty;
+      px(ctx, 4 + x, 4 + y, color);
+    });
+  });
+}
+
+function hungerMask(ctx, mode) {
+  const rows = [
+    '..#####..',
+    '.########',
+    '.########',
+    '..######.',
+    '...###...',
+    '....#....',
+    '...#.....',
+    '..#......'
+  ];
+  rows.forEach((row, y) => {
+    [...row].forEach((cell, x) => {
+      if (cell === '.') return;
+      let color = COLORS.hunger;
+      if (mode === 'empty') color = COLORS.hungerEmpty;
+      else if (mode === 'half' && x >= Math.ceil(row.length / 2)) color = COLORS.hungerEmpty;
+      px(ctx, 4 + x, 4 + y, color);
+    });
+  });
+}
+
+function bubbleIcon(ctx) {
+  const rows = [
+    '..###..',
+    '.#####.',
+    '#######',
+    '#######',
+    '#######',
+    '.#####.',
+    '..###..'
+  ];
+  rows.forEach((row, y) => {
+    [...row].forEach((cell, x) => {
+      if (cell === '.') return;
+      const color = (x === 2 && y === 2) ? hexToRgb('#e3f2fd') : COLORS.bubble;
+      px(ctx, 4 + x, 4 + y, color);
+    });
+  });
+}
+
+function appleIcon(ctx) {
+  for (let y = 3; y <= 12; y++) {
+    for (let x = 3; x <= 12; x++) {
+      const dx = x - 7.5;
+      const dy = y - 8;
+      if (dx * dx + dy * dy > 20) continue;
+      px(ctx, x, y, (x < 6 && y < 8) ? COLORS.appleLight : COLORS.apple);
+    }
+  }
+  px(ctx, 8, 1, COLORS.handleDark);
+  px(ctx, 8, 2, COLORS.handleDark);
+  px(ctx, 9, 2, COLORS.appleLeaf);
+  px(ctx, 10, 2, COLORS.appleLeaf);
+  px(ctx, 9, 3, COLORS.appleLeaf);
+}
+
 // --- Item icons -------------------------------------------------------------
 
 function px(ctx, x, y, color) {
@@ -378,6 +466,7 @@ const TEXTURES = [
 const ITEM_TEXTURES = [
   { name: 'stick', render: stickIcon },
   { name: 'charcoal', render: charcoalIcon },
+  { name: 'apple', render: appleIcon },
   { name: 'wooden_pickaxe', render: (ctx) => toolIcon(ctx, 'pickaxe', COLORS.woodHead, COLORS.handleDark) },
   { name: 'stone_pickaxe', render: (ctx) => toolIcon(ctx, 'pickaxe', COLORS.stoneHead, COLORS.stoneDark) },
   { name: 'wooden_axe', render: (ctx) => toolIcon(ctx, 'axe', COLORS.woodHead, COLORS.handleDark) },
@@ -388,8 +477,19 @@ const ITEM_TEXTURES = [
   { name: 'stone_sword', render: (ctx) => toolIcon(ctx, 'sword', COLORS.stoneHead, COLORS.stoneDark) }
 ];
 
+const UI_TEXTURES = [
+  { name: 'heart_full', render: (ctx) => heartMask(ctx, 'full') },
+  { name: 'heart_half', render: (ctx) => heartMask(ctx, 'half') },
+  { name: 'heart_empty', render: (ctx) => heartMask(ctx, 'empty') },
+  { name: 'hunger_full', render: (ctx) => hungerMask(ctx, 'full') },
+  { name: 'hunger_half', render: (ctx) => hungerMask(ctx, 'half') },
+  { name: 'hunger_empty', render: (ctx) => hungerMask(ctx, 'empty') },
+  { name: 'bubble', render: bubbleIcon }
+];
+
 mkdirSync(BLOCKS_DIR, { recursive: true });
 mkdirSync(ITEMS_DIR, { recursive: true });
+mkdirSync(UI_DIR, { recursive: true });
 
 TEXTURES.forEach((texture, index) => {
   const rng = mulberry32(SEED + index * 0x9e3779b9);
@@ -407,4 +507,12 @@ ITEM_TEXTURES.forEach((texture, index) => {
   texture.render(ctx);
   writeFileSync(join(ITEMS_DIR, `${texture.name}.png`), canvas.toBuffer('image/png'));
   console.log(`wrote items/${texture.name}.png`);
+});
+
+UI_TEXTURES.forEach((texture) => {
+  const canvas = createCanvas(SIZE, SIZE);
+  const ctx = canvas.getContext('2d');
+  texture.render(ctx);
+  writeFileSync(join(UI_DIR, `${texture.name}.png`), canvas.toBuffer('image/png'));
+  console.log(`wrote ui/${texture.name}.png`);
 });

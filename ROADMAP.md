@@ -129,15 +129,18 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 - [ ] F5 camera, third-person front
 
 ### 4.2 Health, hunger, air
-- [ ] 20 HP, damage types, armor points, armor toughness, enchantment protection
-- [ ] Fall/fire/lava/drowning/suffocation/void/cactus/explosion/projectile/magic damage
-- [ ] Damage cooldown (10 ticks), knockback, death screen + respawn
-- [ ] Natural regeneration, hunger 20, saturation, exhaustion, food values
-- [ ] Starvation, sprint gating at hunger ≤ 6
-- [ ] Air meter 300 ticks, drowning damage, bubble columns
+- [x] 20 HP, fall/drown/starve/void damage, death screen + respawn
+- [x] Fall damage, drowning, starvation, air meter + bubbles, damage flash
+- [x] Hunger 20, saturation, exhaustion from moving/jumping/mining, regen
+- [x] Death screen with respawn (inventory kept)
+- [ ] Armor points/toughness, protection enchantments
+- [ ] Fire/lava/suffocation/cactus/explosion/projectile/magic damage
+- [ ] Damage cooldown (10 ticks), knockback, damage tilt
+- [ ] Sprint gating at hunger ≤ 6, food variety/crops
+- [ ] Air 300 ticks (currently 200 per docs), Respiration, water breathing
 - [ ] Fire ticks, freezing, poison/wither/absorption
 - [ ] Totem of undying, golden apples
-- [ ] Experience: orbs, levels, enchanting costs, death drops
+- [ ] Experience: orbs, levels, enchanting costs, death drops (inventory is kept)
 
 ### 4.3 Combat
 - [ ] Attack cooldown 1.6 (sword)/1.0 (hand), damage formula
@@ -149,7 +152,8 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 - [ ] Item durability + anvil repair + mending/unbreaking
 
 ### 4.4 Food & farming
-- [ ] Eating animation, food values, saturation
+- [~] Apples: eat with right-click, 4 hunger / 2.4 saturation; oak leaves 0.5% drop
+- [ ] Eating animation/hold time, more foods
 - [ ] Crops, growth stages, bone meal, hoe/tilling, hydration
 - [ ] Animals breeding, eggs, milk, honey
 - [ ] Cake, pumpkin pie, stews, fish
@@ -363,8 +367,8 @@ Current block set: stone, grass, dirt, sand, oak log, oak leaves, water, oak pla
 ### Next up (ordered queue)
 1. ~~3×3 crafting grid + drag/drop inventory~~ — done
 2. ~~Furnace + smelting + fuel~~ — done (XP pending)
-3. Health, damage, death/respawn, hunger/air HUD
-4. First hostile mob end-to-end (zombie + spawning + combat) to prove the entity pipeline
+3. ~~Health, damage, death/respawn, hunger/air HUD~~ — done
+4. First hostile mob (zombie spawning + combat)
 5. Ore generation + iron/diamond tiers + armor
 6. Caves/aquifers and flowing water
 7. Redstone core (dust, torch, repeater, piston)
