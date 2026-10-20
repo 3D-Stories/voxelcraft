@@ -18,6 +18,7 @@ export class BlockInteraction {
     this.domElement = domElement;
     this.inventory = options.inventory ?? null;
     this.survival = options.survival ?? null;
+    this.mobs = options.mobs ?? null;
     this.highlight = options.highlight ?? null;
     this.onBreak = options.onBreak ?? null;
     this.onUseBlock = options.onUseBlock ?? null;
@@ -25,6 +26,7 @@ export class BlockInteraction {
     this._mining = false;
     this._ticksMined = 0;
     this._targetKey = null;
+    this._lastAttack = 0;
     this._cleanup = [];
 
     this._listen(document, 'mousedown', (event) => this._onMouseDown(event));
@@ -131,6 +133,22 @@ export class BlockInteraction {
   _onMouseDown(event) {
     if (document.pointerLockElement !== this.domElement) return;
     if (event.button === 0) {
+      if (this.mobs) {
+        const now = performance.now();
+        if (now - this._lastAttack >= 500) {
+          const hit = this._mobTarget();
+          if (hit) {
+            this._lastAttack = now;
+            this.mobs.hit(
+              hit.mob,
+              this._attackDamage(),
+              this.player.position.x,
+              this.player.position.z,
+            );
+            return;
+          }
+        }
+      }
       this._mining = true;
       this._ticksMined = 0;
       this._targetKey = null;
@@ -186,6 +204,33 @@ export class BlockInteraction {
       this.inventory.removeFromSlot(this.inventory.selectedIndex, 1);
     }
     return true;
+  }
+
+  _mobTarget() {
+    const player = this.player;
+    const cosPitch = Math.cos(player.pitch);
+    const direction = {
+      x: -Math.sin(player.yaw) * cosPitch,
+      y: Math.sin(player.pitch),
+      z: -Math.cos(player.yaw) * cosPitch,
+    };
+    const origin = {
+      x: player.position.x,
+      y: player.position.y + player.eyeHeight,
+      z: player.position.z,
+    };
+    const reach = player.godMode ? CREATIVE_REACH : BLOCK_REACH;
+    return this.mobs.raycast(origin, direction, reach);
+  }
+
+  _attackDamage() {
+    const id = this.inventory?.selectedId ?? null;
+    const def = id ? getItem(id) : null;
+    if (def?.kind !== 'tool') return 1;
+    if (def.tool === 'sword') return def.speed >= 4 ? 5 : 4;
+    if (def.tool === 'axe') return def.speed >= 4 ? 7 : 6;
+    if (def.tool === 'pickaxe') return def.speed >= 4 ? 3 : 2;
+    return 1;
   }
 
   _blockIntersectsPlayer(x, y, z) {

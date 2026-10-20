@@ -14,6 +14,7 @@ import { detectWebGL } from './render/WebGLSupport.js';
 import { Inventory } from './core/Inventory.js';
 import { FurnaceManager } from './core/Furnace.js';
 import { Survival } from './player/Survival.js';
+import { MobManager } from './entities/MobManager.js';
 import { HUD } from './ui/HUD.js';
 import { InventoryScreen } from './ui/InventoryScreen.js';
 import { FurnaceScreen } from './ui/FurnaceScreen.js';
@@ -150,6 +151,13 @@ async function main() {
   });
   if (restoring && saved.survival) survival.restore(saved.survival);
 
+  const mobs = new MobManager(scene, world, {
+    player,
+    survival,
+    surfaceHeight: (x, z) => terrain.getHeight(x, z),
+    isNight: () => sky.isNight,
+  });
+
   const urlTime = readStartTime();
   const savedTime = restoring && Number.isFinite(saved.skyTime) ? saved.skyTime : null;
   const sky = new Sky(scene, { seed, dayTime: urlTime ?? savedTime ?? 1000 });
@@ -185,6 +193,7 @@ async function main() {
     highlight,
     inventory,
     survival,
+    mobs,
     onUseBlock: (target) => {
       if (target.id === BlockRegistry.FURNACE) {
         furnaceScreen?.openAt(target);
@@ -277,7 +286,7 @@ async function main() {
   window.voxelcraft = {
     scene, camera, renderer, world, terrain, seed, sky, player, physics, controller,
     interaction, highlight, inventory, hud, inventoryScreen, furnaces, furnaceScreen,
-    survival, store, saveNow, autosave,
+    survival, mobs, store, saveNow, autosave,
   };
 
   let revealed = false;
@@ -296,6 +305,7 @@ async function main() {
       controller.update();
       physics.update(SIM_STEP);
       survival.update(SIM_STEP);
+      mobs.update(SIM_STEP);
       interaction.update(SIM_STEP);
       furnaces.tick(1);
       sky.update(SIM_STEP, camera);
